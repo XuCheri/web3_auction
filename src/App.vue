@@ -1,7 +1,7 @@
-<script setup></script>
+<script setup>
+import Layout from "./components/Layout/Layout.vue"
+</script>
 <template>
-  <router-link to="/Demo1">Go to Demo1</router-link>
-  <router-link to="/Demo2">Go to Demo2</router-link>
-  <router-view></router-view>
+    <Layout />
 </template>
 <style></style>
