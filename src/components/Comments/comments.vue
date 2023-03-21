@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-21 12:51:01
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-21 15:44:05
+ * @LastEditTime: 2023-03-21 16:15:43
  * @FilePath: /web3_auction/src/components/Comments/comments.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -26,11 +26,11 @@
     </a-list>
     <a-comment>
         <template #avatar>
-            <a-avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />
+            <a-avatar src="/avatars/avatar_01.jpg" alt="Han Solo" />
         </template>
         <template #content>
             <a-form-item>
-                <a-textarea v-model:value="value" :rows="4" />
+                <a-textarea placeholder="在这里留下什么吧～" v-model:value="value" :rows="4" />
             </a-form-item>
             <a-form-item>
                 <a-button

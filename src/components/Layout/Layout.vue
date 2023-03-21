@@ -1,8 +1,8 @@
 <template>
     <a-layout style="min-height: 100vh">
-        <a-layout-sider v-model:collapsed="collapsed" theme="dark" collapsible>
+        <a-layout-sider v-model:collapsed="collapsed" :theme="colors" collapsible>
             <div class="logo" />
-            <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
+            <a-menu v-model:selectedKeys="selectedKeys" :theme="colors" mode="inline">
                 <a-menu-item key="1">
                     <router-link to="/">
                         <chrome-outlined />
@@ -49,6 +49,13 @@
                     </router-link>
                 </a-menu-item>
             </a-menu>
+            <div class="darkMode">
+                <a-switch
+                    v-model:checked="checked"
+                    checked-children="开"
+                    un-checked-children="关"
+                />
+            </div>
         </a-layout-sider>
         <a-layout>
             <a-layout-header style="background: #fff; padding: 0">
@@ -72,7 +79,7 @@ import {
     CommentOutlined,
     ChromeOutlined,
 } from "@ant-design/icons-vue"
-import { defineComponent, ref } from "vue"
+import { defineComponent, ref, reactive, computed } from "vue"
 export default defineComponent({
     components: {
         MoneyCollectOutlined,
@@ -82,15 +89,28 @@ export default defineComponent({
         CommentOutlined,
         ChromeOutlined,
     },
-    data() {
+    setup() {
+        const checked = ref(true)
         return {
+            checked,
+            color: reactive(["dark", "light"]),
+            colors: computed(() => {
+                return checked.value == true ? "dark" : "light"
+            }),
             collapsed: ref(false),
             selectedKeys: ref(["1"]),
         }
     },
+    // data() {
+
+    // },
 })
 </script>
-<style>
+<style scoped>
+.darkMode {
+    display: flex;
+    justify-content: center;
+}
 .logo {
     height: 32px;
     margin: 16px;
