@@ -95,7 +95,7 @@ import { defineComponent } from "vue"
 import { EllipsisOutlined } from "@ant-design/icons-vue"
 const routes = [
     {
-        path: "/",
+        path: "/ORDERLIST",
         breadcrumbName: "主页",
     },
     {
