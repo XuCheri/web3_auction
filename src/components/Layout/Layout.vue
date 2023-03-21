@@ -4,12 +4,18 @@
             <div class="logo" />
             <a-menu v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
                 <a-menu-item key="1">
-                    <router-link to="/OrderList">
-                        <pie-chart-outlined />
-                        <span>商品列表</span>
+                    <router-link to="/">
+                        <chrome-outlined />
+                        <span>主页</span>
                     </router-link>
                 </a-menu-item>
                 <a-menu-item key="2">
+                    <router-link to="/OrderList">
+                        <money-collect-outlined />
+                        <span>商品列表</span>
+                    </router-link>
+                </a-menu-item>
+                <a-menu-item key="3">
                     <router-link to="/OrderInfo">
                         <desktop-outlined />
                         <span>订单信息</span>
@@ -22,9 +28,9 @@
                             <span>用户中心</span>
                         </span>
                     </template>
-                    <a-menu-item key="3">Tom</a-menu-item>
-                    <a-menu-item key="4">Bill</a-menu-item>
-                    <a-menu-item key="5">Alex</a-menu-item>
+                    <a-menu-item key="4">Tom</a-menu-item>
+                    <a-menu-item key="5">Bill</a-menu-item>
+                    <a-menu-item key="6">Alex</a-menu-item>
                 </a-sub-menu>
                 <a-sub-menu key="sub2">
                     <template #title>
@@ -33,12 +39,14 @@
                             <span>Team</span>
                         </span>
                     </template>
-                    <a-menu-item key="6">Team 1</a-menu-item>
+                    <a-menu-item key="7">Team 1</a-menu-item>
                     <a-menu-item key="8">Team 2</a-menu-item>
                 </a-sub-menu>
                 <a-menu-item key="9">
-                    <file-outlined />
-                    <span>File</span>
+                    <router-link to="/comments">
+                        <comment-outlined />
+                        <span>评论区</span>
+                    </router-link>
                 </a-menu-item>
             </a-menu>
         </a-layout-sider>
@@ -57,20 +65,22 @@
 </template>
 <script>
 import {
-    PieChartOutlined,
+    MoneyCollectOutlined,
     DesktopOutlined,
     UserOutlined,
     TeamOutlined,
-    FileOutlined,
+    CommentOutlined,
+    ChromeOutlined,
 } from "@ant-design/icons-vue"
 import { defineComponent, ref } from "vue"
 export default defineComponent({
     components: {
-        PieChartOutlined,
+        MoneyCollectOutlined,
         DesktopOutlined,
         UserOutlined,
         TeamOutlined,
-        FileOutlined,
+        CommentOutlined,
+        ChromeOutlined,
     },
     data() {
         return {
@@ -81,7 +91,7 @@ export default defineComponent({
 })
 </script>
 <style>
-#components-layout-demo-side .logo {
+.logo {
     height: 32px;
     margin: 16px;
     background: rgba(255, 255, 255, 0.3);

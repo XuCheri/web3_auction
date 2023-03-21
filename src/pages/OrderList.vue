@@ -1,5 +1,5 @@
 <script setup>
-import OrderList from "../components/OrderList/OrderList.vue"
+import OrderList from "@/components/OrderList/OrderList.vue"
 const productList = [
     {
         name: "Product A",

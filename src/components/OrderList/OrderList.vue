@@ -38,6 +38,10 @@ import { Button, Table, Pagination, Modal, Form, Input, InputNumber } from "ant-
 
 const columns = [
     {
+        title: "ID",
+        dataIndex: "id",
+    },
+    {
         title: "商品名称",
         dataIndex: "name",
     },
