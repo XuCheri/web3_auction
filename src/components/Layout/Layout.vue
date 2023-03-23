@@ -2,6 +2,22 @@
     <a-layout style="min-height: 100vh">
         <a-layout-sider v-model:collapsed="collapsed" :theme="colors" collapsible>
             <div class="logo" />
+            <div class="connect" v-if="!connected">
+                <a-button type="primary" shape="round" @click="connect">
+                    <template #icon>
+                        <api-outlined />
+                    </template>
+                    {{ content }}
+                </a-button>
+            </div>
+            <div class="connect" v-else>
+                <a-button type="primary" shape="round" @click="disconnect">
+                    <template #icon>
+                        <api-outlined />
+                    </template>
+                    退出登录
+                </a-button>
+            </div>
             <a-menu v-model:selectedKeys="selectedKeys" :theme="colors" mode="inline">
                 <a-menu-item key="1">
                     <router-link to="/">
@@ -48,9 +64,13 @@
                         <span>评论区</span>
                     </router-link>
                 </a-menu-item>
+                <a-menu-item v-if="connected" key="10">
+                    <span><user-outlined /> {{ ID }}</span>
+                </a-menu-item>
             </a-menu>
             <div class="darkMode">
                 <a-switch
+                    class="darkModeBtn"
                     v-model:checked="checked"
                     checked-children="开"
                     un-checked-children="关"
@@ -78,6 +98,7 @@ import {
     TeamOutlined,
     CommentOutlined,
     ChromeOutlined,
+    ApiOutlined,
 } from "@ant-design/icons-vue"
 import { defineComponent, ref, reactive, computed } from "vue"
 export default defineComponent({
@@ -88,12 +109,47 @@ export default defineComponent({
         TeamOutlined,
         CommentOutlined,
         ChromeOutlined,
+        ApiOutlined,
     },
     setup() {
+        async function connect() {
+            if (typeof window.ethereum != "undefined") {
+                console.log("I see the metamask")
+                await window.ethereum.request({ method: "eth_requestAccounts" })
+                // 获取公钥
+                const accounts = await window.ethereum.request({
+                    method: "eth_accounts",
+                })
+                content.value = "已连接"
+                connected.value = true
+                ID.value = accounts[0]
+            } else {
+                console.log("I don't see the metamask")
+            }
+        }
+        async function disconnect() {
+            const provider = window.ethereum
+            if (provider) {
+                try {
+                    await provider.request({ method: "eth_logout" })
+                    console.log("已断开 Metamask 账户和浏览器的连接")
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        }
+
+        const connected = ref(false)
+        const content = ref("连接钱包")
         const checked = ref(true)
+        const ID = ref("")
         return {
+            ID,
+            connected,
+            content,
+            connect,
+            disconnect,
             checked,
-            color: reactive(["dark", "light"]),
             colors: computed(() => {
                 return checked.value == true ? "dark" : "light"
             }),
@@ -107,9 +163,14 @@ export default defineComponent({
 })
 </script>
 <style scoped>
+.connect {
+    display: flex;
+    justify-content: center;
+}
 .darkMode {
     display: flex;
     justify-content: center;
+    margin-top: 40vh;
 }
 .logo {
     height: 32px;
