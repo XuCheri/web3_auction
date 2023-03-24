@@ -2,20 +2,12 @@
     <a-layout style="min-height: 100vh">
         <a-layout-sider v-model:collapsed="collapsed" :theme="colors" collapsible>
             <div class="logo" />
-            <div class="connect" v-if="!connected">
+            <div class="connect">
                 <a-button type="primary" shape="round" @click="connect">
                     <template #icon>
                         <api-outlined />
                     </template>
                     {{ content }}
-                </a-button>
-            </div>
-            <div class="connect" v-else>
-                <a-button type="primary" shape="round" @click="disconnect">
-                    <template #icon>
-                        <api-outlined />
-                    </template>
-                    退出登录
                 </a-button>
             </div>
             <a-menu v-model:selectedKeys="selectedKeys" :theme="colors" mode="inline">
@@ -31,13 +23,13 @@
                         <span>商品列表</span>
                     </router-link>
                 </a-menu-item>
-                <a-menu-item key="3">
+                <a-menu-item key="3" :disabled="disabled">
                     <router-link to="/OrderInfo">
                         <desktop-outlined />
                         <span>订单信息</span>
                     </router-link>
                 </a-menu-item>
-                <a-sub-menu key="sub1">
+                <a-sub-menu key="sub1" :disabled="disabled">
                     <template #title>
                         <span>
                             <user-outlined />
@@ -48,7 +40,7 @@
                     <a-menu-item key="5">Bill</a-menu-item>
                     <a-menu-item key="6">Alex</a-menu-item>
                 </a-sub-menu>
-                <a-sub-menu key="sub2">
+                <a-sub-menu key="sub2" :disabled="disabled">
                     <template #title>
                         <span>
                             <team-outlined />
@@ -89,6 +81,18 @@
             </a-layout-footer>
         </a-layout>
     </a-layout>
+    <div class="noWallet" v-if="haveWallet">
+        <a-alert
+            message="Error"
+            description="请在浏览器安装MetaMask插件"
+            closable
+            :after-close="() => (haveWallet = false)"
+            type="warning"
+            show-icon
+        >
+            <template #icon><smile-outlined /></template>
+        </a-alert>
+    </div>
 </template>
 <script>
 import {
@@ -99,6 +103,7 @@ import {
     CommentOutlined,
     ChromeOutlined,
     ApiOutlined,
+    SmileOutlined,
 } from "@ant-design/icons-vue"
 import { defineComponent, ref, reactive, computed } from "vue"
 export default defineComponent({
@@ -110,6 +115,7 @@ export default defineComponent({
         CommentOutlined,
         ChromeOutlined,
         ApiOutlined,
+        SmileOutlined,
     },
     setup() {
         async function connect() {
@@ -123,33 +129,38 @@ export default defineComponent({
                 content.value = "已连接"
                 connected.value = true
                 ID.value = accounts[0]
+                ethereum.on("accountsChanged", handleAccountsChanged)
+                disabled.value = false
             } else {
-                console.log("I don't see the metamask")
+                haveWallet.value = true
             }
         }
-        async function disconnect() {
-            const provider = window.ethereum
-            if (provider) {
-                try {
-                    await provider.request({ method: "eth_logout" })
-                    console.log("已断开 Metamask 账户和浏览器的连接")
-                } catch (error) {
-                    console.error(error)
-                }
+        async function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                console.log("Please connect to MetaMask.")
+                content.value = "连接账户"
+                connected.value = false
+                window.location.href = "/"
+            } else if (accounts[0] !== ID.value) {
+                // currentAccount = accounts[0]
+                console.log("已连接")
             }
         }
-
+        const haveWallet = ref(false)
         const connected = ref(false)
         const content = ref("连接钱包")
         const checked = ref(true)
         const ID = ref("")
+        const disabled = ref(true)
         return {
+            handleAccountsChanged,
             ID,
             connected,
             content,
             connect,
-            disconnect,
+            haveWallet,
             checked,
+            disabled,
             colors: computed(() => {
                 return checked.value == true ? "dark" : "light"
             }),
@@ -163,6 +174,12 @@ export default defineComponent({
 })
 </script>
 <style scoped>
+.noWallet {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 .connect {
     display: flex;
     justify-content: center;
