@@ -119,19 +119,32 @@ export default defineComponent({
     },
     setup() {
         async function connect() {
+            // Check if the user has MetaMask installed
             if (typeof window.ethereum != "undefined") {
-                console.log("I see the metamask")
-                await window.ethereum.request({ method: "eth_requestAccounts" })
-                // 获取公钥
-                const accounts = await window.ethereum.request({
-                    method: "eth_accounts",
-                })
-                content.value = "已连接"
-                connected.value = true
-                ID.value = accounts[0]
-                ethereum.on("accountsChanged", handleAccountsChanged)
-                disabled.value = false
+                // Ask the user to connect their MetaMask wallet
+                try {
+                    await window.ethereum.request({ method: "eth_requestAccounts" })
+                    // Get the user's public key
+                    const accounts = await window.ethereum.request({
+                        method: "eth_accounts",
+                    })
+                    content.value = "已连接"
+                    connected.value = true
+                    ID.value = accounts[0]
+                    // Listen for accounts change
+                    ethereum.on("accountsChanged", handleAccountsChanged)
+                    disabled.value = false
+                } catch (error) {
+                    if (error.code === 4001) {
+                        // EIP-1193 userRejectedRequest error
+                        // If this happens, the user rejected the connection request.
+                        console.log("Please connect to MetaMask.")
+                    } else {
+                        console.error(error)
+                    }
+                }
             } else {
+                // The user doesn't have MetaMask installed
                 haveWallet.value = true
             }
         }
