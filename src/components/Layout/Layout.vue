@@ -153,12 +153,18 @@ export default defineComponent({
                 console.log("Please connect to MetaMask.")
                 content.value = "连接账户"
                 connected.value = false
-                window.location.href = "/"
+                disabled.value = true
+                const hash = window.location.hash
+                // console.log(hash)
+                if (hash != "#/" && hash != "#/OrderList" && hash != "#/comments") {
+                    window.location.href = "/"
+                }
             } else if (accounts[0] !== ID.value) {
                 // currentAccount = accounts[0]
                 console.log("已连接")
             }
         }
+        // 获取当前的url的虚拟目录部分
         const haveWallet = ref(false)
         const connected = ref(false)
         const content = ref("连接钱包")

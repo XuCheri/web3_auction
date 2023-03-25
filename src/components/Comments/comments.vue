@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-21 12:51:01
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-21 16:15:43
+ * @LastEditTime: 2023-03-25 15:27:51
  * @FilePath: /web3_auction/src/components/Comments/comments.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -30,7 +30,12 @@
         </template>
         <template #content>
             <a-form-item>
-                <a-textarea placeholder="在这里留下什么吧～" v-model:value="value" :rows="4" />
+                <a-textarea
+                    :disabled="connected"
+                    placeholder="在这里留下什么吧～"
+                    v-model:value="value"
+                    :rows="4"
+                />
             </a-form-item>
             <a-form-item>
                 <a-button
@@ -46,7 +51,7 @@
     </a-comment>
 </template>
 <script>
-import { defineComponent, ref } from "vue"
+import { defineComponent, ref, onBeforeMount } from "vue"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 dayjs.extend(relativeTime)
@@ -75,13 +80,32 @@ export default defineComponent({
             "/avatars/avatar_20.jpg",
             "/avatars/avatar_21.jpg",
         ]
+        const connected = ref(true)
         const comments = ref([])
         const submitting = ref(false)
         const value = ref("")
         function getRandomInt() {
             return Math.floor(Math.random() * 21)
         }
+        onBeforeMount(async () => {
+            const accounts = await window.ethereum.request({
+                method: "eth_accounts",
+            })
+            ethereum.on("accountsChanged", handleAccountsChanged)
+            if (accounts[0].length !== 0) {
+                connected.value = false
+            }
+        })
 
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                console.log("Please connect to MetaMask.")
+                connected.value = true
+            } else {
+                connected.value = false
+                console.log("已连接")
+            }
+        }
         const handleSubmit = () => {
             if (!value.value) {
                 return
@@ -102,10 +126,12 @@ export default defineComponent({
             }, 1000)
         }
         return {
+            connected,
             comments,
             submitting,
             value,
             handleSubmit,
+            handleAccountsChanged,
         }
     },
 })
