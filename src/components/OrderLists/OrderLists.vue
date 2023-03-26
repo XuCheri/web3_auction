@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-26 11:47:42
+ * @LastEditTime: 2023-03-26 20:23:36
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -36,17 +36,24 @@
                 <h1 class="title">{{ OrderName }}</h1>
             </template>
             <a-row :gutter="[24, 10]">
-                <a-col :span="12">
+                <a-col :span="8">
                     <a-statistic title="Likes" :value="LikesValue.value" style="margin-right: 50px">
                         <template #suffix>
                             <like-outlined />
                         </template>
                     </a-statistic>
                 </a-col>
-                <a-col :span="12">
-                    <a-statistic title="Wants" :value="WantsValue.value" class="demo-class">
+                <a-col :span="8">
+                    <a-statistic title="Wants" :value="WantsValue.value">
                         <template #suffix>
                             <star-outlined />
+                        </template>
+                    </a-statistic>
+                </a-col>
+                <a-col :span="8">
+                    <a-statistic title="Top Bidding" :value="TopPrice">
+                        <template #suffix>
+                            <transaction-outlined />
                         </template>
                     </a-statistic>
                 </a-col>
@@ -68,8 +75,9 @@ import {
     PayCircleFilled,
     LikeOutlined,
     StarTwoTone,
+    TransactionOutlined,
 } from "@ant-design/icons-vue"
-import { ref } from "vue"
+import { ref, computed } from "vue"
 const props = defineProps([
     "Author",
     "AuthorDescription",
@@ -80,7 +88,11 @@ const props = defineProps([
     "WantsValue",
     "avatarSrc",
     "AuctionTime",
+    "TopBidding",
 ])
+const TopPrice = computed(() => {
+    return props.TopBidding.value + "ETH"
+})
 const Liked = ref(false)
 const Wanted = ref(false)
 const emit = defineEmits(["LikesAdd", "WantsAdd", "NoWantsAdd", "NoLikesAdd"])

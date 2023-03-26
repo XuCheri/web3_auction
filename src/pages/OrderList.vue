@@ -48,6 +48,7 @@ const orders = [
         WantsValue: ref(2378),
         avatarSrc: avatarArray[getRandomInt()],
         AuctionTime: Date.now() + 1000 * 60 * 60 * 24 * 1,
+        TopBidding: ref(20),
     },
     {
         ID: 2,
@@ -60,6 +61,7 @@ const orders = [
         WantsValue: ref(0),
         avatarSrc: avatarArray[getRandomInt()],
         AuctionTime: Date.now() + 1000 * 60 * 60 * 24 * 1.5,
+        TopBidding: ref(135),
     },
 ]
 function getRandomInt() {
@@ -93,6 +95,7 @@ function NoWantsAdd(order) {
             :WantsValue="order.WantsValue"
             :avatarSrc="order.avatarSrc"
             :AuctionTime="order.AuctionTime"
+            :TopBidding="order.TopBidding"
             @LikesAdd="LikesAdd(order)"
             @WantsAdd="WantsAdd(order)"
             @NoLikesAdd="NoLikesAdd(order)"
