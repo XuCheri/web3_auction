@@ -183,6 +183,19 @@ export default defineComponent({
         const checked = ref(true)
         const ID = ref("")
         const disabled = ref(true)
+        let selectedKeys = ref(["1"])
+        function handleSelect() {
+            const hash = window.location.hash
+            if (hash == "#/") {
+                selectedKeys.value = ["1"]
+            } else if (hash == "#/OrderList") {
+                selectedKeys.value = ["2"]
+            } else if (hash == "#/comments") {
+                selectedKeys.value = ["9"]
+            }
+        }
+        handleSelect()
+
         return {
             handleAccountsChanged,
             ID,
@@ -197,7 +210,8 @@ export default defineComponent({
                 return checked.value == true ? "dark" : "light"
             }),
             collapsed: ref(false),
-            selectedKeys: ref(["1"]),
+            selectedKeys,
+            handleSelect,
         }
     },
     // data() {
