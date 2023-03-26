@@ -118,6 +118,26 @@ export default defineComponent({
         SmileOutlined,
     },
     setup() {
+        async function getAccount() {
+            try {
+                const accounts = await window.ethereum.request({
+                    method: "eth_accounts",
+                })
+                if (accounts.length != 0) {
+                    content.value = "已连接"
+                    connected.value = true
+                    ID.value = accounts[0]
+                    // Listen for accounts change
+                    ethereum.on("accountsChanged", handleAccountsChanged)
+                    disabled.value = false
+                } else {
+                    console.log("未连接")
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        getAccount()
         async function connect() {
             // Check if the user has MetaMask installed
             if (typeof window.ethereum != "undefined") {
@@ -125,15 +145,7 @@ export default defineComponent({
                 try {
                     await window.ethereum.request({ method: "eth_requestAccounts" })
                     // Get the user's public key
-                    const accounts = await window.ethereum.request({
-                        method: "eth_accounts",
-                    })
-                    content.value = "已连接"
-                    connected.value = true
-                    ID.value = accounts[0]
-                    // Listen for accounts change
-                    ethereum.on("accountsChanged", handleAccountsChanged)
-                    disabled.value = false
+                    await getAccount()
                 } catch (error) {
                     if (error.code === 4001) {
                         // EIP-1193 userRejectedRequest error
@@ -180,6 +192,7 @@ export default defineComponent({
             haveWallet,
             checked,
             disabled,
+            getAccount,
             colors: computed(() => {
                 return checked.value == true ? "dark" : "light"
             }),
