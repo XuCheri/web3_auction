@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-26 11:26:50
+ * @LastEditTime: 2023-03-26 11:47:42
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -30,7 +30,7 @@
                 <like-two-tone v-else="Liked" @click="NoLikes" />
                 <star-outlined v-if="!Wanted" key="edit" @click="Wants" />
                 <star-two-tone v-else="Wanted" @click="NoWants" />
-                <ellipsis-outlined key="ellipsis" />
+                <pay-circle-filled key="pay" />
             </template>
             <template #title>
                 <h1 class="title">{{ OrderName }}</h1>
@@ -45,12 +45,15 @@
                 </a-col>
                 <a-col :span="12">
                     <a-statistic title="Wants" :value="WantsValue.value" class="demo-class">
+                        <template #suffix>
+                            <star-outlined />
+                        </template>
                     </a-statistic>
                 </a-col>
             </a-row>
             <a-statistic-countdown
                 title="竞拍结束还剩"
-                :value="Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30"
+                :value="AuctionTime"
                 format="HH:mm:ss:SSS"
                 style="margin-right: 50px"
             />
@@ -62,12 +65,11 @@ import {
     LikeFilled,
     LikeTwoTone,
     StarOutlined,
-    EllipsisOutlined,
+    PayCircleFilled,
     LikeOutlined,
     StarTwoTone,
 } from "@ant-design/icons-vue"
-import { defineComponent, ref, watch } from "vue"
-import { func } from "vue-types"
+import { ref } from "vue"
 const props = defineProps([
     "Author",
     "AuthorDescription",
@@ -77,6 +79,7 @@ const props = defineProps([
     "LikesValue",
     "WantsValue",
     "avatarSrc",
+    "AuctionTime",
 ])
 const Liked = ref(false)
 const Wanted = ref(false)
