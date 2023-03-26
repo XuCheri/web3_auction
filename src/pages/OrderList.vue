@@ -1,5 +1,5 @@
 <script setup>
-import OrderList from "@/components/OrderList/OrderList.vue"
+// import OrderList from "@/components/OrderList/OrderList.vue"
 import OrderLists from "@/components/OrderLists/OrderLists.vue"
 import { ref } from "vue"
 // const productList = [
@@ -69,6 +69,12 @@ function LikesAdd(order) {
 function WantsAdd(order) {
     orders[order.ID - 1].WantsValue.value++
 }
+function NoLikesAdd(order) {
+    orders[order.ID - 1].LikesValue.value--
+}
+function NoWantsAdd(order) {
+    orders[order.ID - 1].WantsValue.value--
+}
 </script>
 <template>
     <!-- <OrderList :products="productList" /> -->
@@ -86,6 +92,8 @@ function WantsAdd(order) {
             :avatarSrc="order.avatarSrc"
             @LikesAdd="LikesAdd(order)"
             @WantsAdd="WantsAdd(order)"
+            @NoLikesAdd="NoLikesAdd(order)"
+            @NoWantsAdd="NoWantsAdd(order)"
         />
     </a-row>
 </template>

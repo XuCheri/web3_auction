@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-26 11:13:50
+ * @LastEditTime: 2023-03-26 11:26:50
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -26,8 +26,10 @@
                 <img alt="example" :src="imgsrc" />
             </template>
             <template #actions>
-                <like-filled key="like" @click="emit('LikesAdd')" />
-                <edit-outlined key="edit" @click="emit('WantsAdd')" />
+                <like-filled v-if="!Liked" key="like" @click="Likes" />
+                <like-two-tone v-else="Liked" @click="NoLikes" />
+                <star-outlined v-if="!Wanted" key="edit" @click="Wants" />
+                <star-two-tone v-else="Wanted" @click="NoWants" />
                 <ellipsis-outlined key="ellipsis" />
             </template>
             <template #title>
@@ -56,8 +58,16 @@
     </a-col>
 </template>
 <script setup>
-import { LikeFilled, EditOutlined, EllipsisOutlined, LikeOutlined } from "@ant-design/icons-vue"
+import {
+    LikeFilled,
+    LikeTwoTone,
+    StarOutlined,
+    EllipsisOutlined,
+    LikeOutlined,
+    StarTwoTone,
+} from "@ant-design/icons-vue"
 import { defineComponent, ref, watch } from "vue"
+import { func } from "vue-types"
 const props = defineProps([
     "Author",
     "AuthorDescription",
@@ -68,11 +78,25 @@ const props = defineProps([
     "WantsValue",
     "avatarSrc",
 ])
-const LikesValue2 = ref(props.LikesValue)
-watch(LikesValue2, () => {
-    console.log(LikesValue2)
-})
-const emit = defineEmits(["LikesAdd", "WantsAdd"])
+const Liked = ref(false)
+const Wanted = ref(false)
+const emit = defineEmits(["LikesAdd", "WantsAdd", "NoWantsAdd", "NoLikesAdd"])
+const Likes = () => {
+    emit("LikesAdd")
+    Liked.value = true
+}
+const NoLikes = () => {
+    emit("NoLikesAdd")
+    Liked.value = false
+}
+const Wants = () => {
+    emit("WantsAdd")
+    Wanted.value = true
+}
+const NoWants = () => {
+    emit("NoWantsAdd")
+    Wanted.value = false
+}
 const tabList = [
     {
         key: "tab1",
