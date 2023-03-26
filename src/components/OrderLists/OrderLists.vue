@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-26 20:30:02
+ * @LastEditTime: 2023-03-26 21:55:45
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -30,7 +30,19 @@
                 <like-two-tone v-else="Liked" @click="NoLikes" />
                 <star-outlined v-if="!Wanted" key="edit" @click="Wants" />
                 <star-two-tone v-else="Wanted" @click="NoWants" />
-                <pay-circle-filled key="pay" />
+                <a-popover :title="`Bid for ${OrderName}`">
+                    <template #content>
+                        <a-input-number
+                            v-model:value="BidPrice"
+                            :min="props.TopBidding.value + 0.1"
+                            :max="10000000"
+                            :step="0.1"
+                            style="width: 80%"
+                        />
+                        <label for="">ETH</label>
+                    </template>
+                    <pay-circle-filled key="pay" />
+                </a-popover>
             </template>
             <template #title>
                 <h1 class="title">{{ OrderName }}</h1>
@@ -93,6 +105,7 @@ const props = defineProps([
 const TopPrice = computed(() => {
     return props.TopBidding.value + "ETH"
 })
+const BidPrice = ref(props.TopBidding.value + 0.1 || 0)
 const Liked = ref(false)
 const Wanted = ref(false)
 const emit = defineEmits(["LikesAdd", "WantsAdd", "NoWantsAdd", "NoLikesAdd"])
