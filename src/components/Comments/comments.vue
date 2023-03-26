@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-21 12:51:01
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-25 15:27:51
+ * @LastEditTime: 2023-03-26 09:18:59
  * @FilePath: /web3_auction/src/components/Comments/comments.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -51,7 +51,7 @@
     </a-comment>
 </template>
 <script>
-import { defineComponent, ref, onBeforeMount } from "vue"
+import { defineComponent, ref, onMounted } from "vue"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 dayjs.extend(relativeTime)
@@ -87,12 +87,12 @@ export default defineComponent({
         function getRandomInt() {
             return Math.floor(Math.random() * 21)
         }
-        onBeforeMount(async () => {
+        onMounted(async () => {
             const accounts = await window.ethereum.request({
                 method: "eth_accounts",
             })
             ethereum.on("accountsChanged", handleAccountsChanged)
-            if (accounts[0].length !== 0) {
+            if (accounts.length != 0) {
                 connected.value = false
             }
         })
