@@ -2,97 +2,108 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-27 17:38:03
+ * @LastEditTime: 2023-03-27 18:08:34
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
-    <a-col :span="6">
-        <a-card
-            hoverable
-            style="width: 350px"
-            :tab-list="tabList"
-            :active-tab-key="Tabkey"
-            @tabChange="(Tabkey) => onTabChange(Tabkey)"
-        >
-            <a-card-meta v-show="Tabkey == 'tab1'" :title="Author" :description="AuthorDescription">
-                <template #avatar>
-                    <a-avatar :src="avatarSrc" />
-                </template>
-            </a-card-meta>
-            <a-card-meta
-                :title="OrderName"
-                v-show="Tabkey == 'tab2'"
-                :description="OrderDescription"
+    <Transition name="fade">
+        <a-col v-if="ended" :span="6">
+            <a-card
+                hoverable
+                style="width: 350px"
+                :tab-list="tabList"
+                :active-tab-key="Tabkey"
+                @tabChange="(Tabkey) => onTabChange(Tabkey)"
             >
-            </a-card-meta>
-            <template #extra><a @click="showDrawer">Details</a></template>
-            <template #cover>
-                <img alt="example" :src="imgsrc" />
-            </template>
-            <template #actions>
-                <like-filled v-if="!Liked" key="like" @click="Likes" />
-                <like-two-tone v-else="Liked" @click="NoLikes" />
-                <star-outlined v-if="!Wanted" key="edit" @click="Wants" />
-                <star-two-tone v-else="Wanted" @click="NoWants" />
-                <a-popover :title="`Bid for ${OrderName} with`">
-                    <template #content>
-                        <a-input-number
-                            v-model:value="BidPrice"
-                            :min="props.TopBidding.value + 1"
-                            :max="10000000"
-                            :step="1"
-                            style="width: 80%"
-                        />
-                        <label for="">ETH</label>
+                <a-card-meta
+                    v-show="Tabkey == 'tab1'"
+                    :title="Author"
+                    :description="AuthorDescription"
+                >
+                    <template #avatar>
+                        <a-avatar :src="avatarSrc" />
                     </template>
-                    <pay-circle-filled key="pay" @click="openMessage" />
-                </a-popover>
-            </template>
-            <template #title>
-                <h1 class="title">{{ OrderName }}</h1>
-            </template>
-            <a-row :gutter="[24, 10]">
-                <a-col :span="8">
-                    <a-statistic title="Likes" :value="LikesValue.value" style="margin-right: 50px">
-                        <template #suffix>
-                            <like-outlined />
+                </a-card-meta>
+                <a-card-meta
+                    :title="OrderName"
+                    v-show="Tabkey == 'tab2'"
+                    :description="OrderDescription"
+                >
+                </a-card-meta>
+                <template #extra><a @click="showDrawer">Details</a></template>
+                <template #cover>
+                    <img alt="example" :src="imgsrc" />
+                </template>
+                <template #actions>
+                    <like-filled v-if="!Liked" key="like" @click="Likes" />
+                    <like-two-tone v-else="Liked" @click="NoLikes" />
+                    <star-outlined v-if="!Wanted" key="edit" @click="Wants" />
+                    <star-two-tone v-else="Wanted" @click="NoWants" />
+                    <a-popover :title="`Bid for ${OrderName} with`">
+                        <template #content>
+                            <a-input-number
+                                v-model:value="BidPrice"
+                                :min="props.TopBidding.value + 1"
+                                :max="10000000"
+                                :step="1"
+                                style="width: 80%"
+                            />
+                            <label for="">ETH</label>
                         </template>
-                    </a-statistic>
-                </a-col>
-                <a-col :span="8">
-                    <a-statistic title="Wants" :value="WantsValue.value">
-                        <template #suffix>
-                            <star-outlined />
-                        </template>
-                    </a-statistic>
-                </a-col>
-                <a-col :span="8">
-                    <a-statistic title="Top Bidding" :value="TopPrice">
-                        <template #suffix>
-                            <transaction-outlined />
-                        </template>
-                    </a-statistic>
-                </a-col>
-            </a-row>
-            <a-statistic-countdown
-                title="竞拍结束还剩"
-                :value="AuctionTime"
-                format="HH:mm:ss:SSS"
-                style="margin-right: 50px"
+                        <pay-circle-filled key="pay" @click="openMessage" />
+                    </a-popover>
+                </template>
+                <template #title>
+                    <h1 class="title">{{ OrderName }}</h1>
+                </template>
+                <a-row :gutter="[24, 10]">
+                    <a-col :span="8">
+                        <a-statistic
+                            title="Likes"
+                            :value="LikesValue.value"
+                            style="margin-right: 50px"
+                        >
+                            <template #suffix>
+                                <like-outlined />
+                            </template>
+                        </a-statistic>
+                    </a-col>
+                    <a-col :span="8">
+                        <a-statistic title="Wants" :value="WantsValue.value">
+                            <template #suffix>
+                                <star-outlined />
+                            </template>
+                        </a-statistic>
+                    </a-col>
+                    <a-col :span="8">
+                        <a-statistic title="Top Bidding" :value="TopPrice">
+                            <template #suffix>
+                                <transaction-outlined />
+                            </template>
+                        </a-statistic>
+                    </a-col>
+                </a-row>
+                <a-statistic-countdown
+                    @finish="AuctionEnd"
+                    title="竞拍结束还剩"
+                    :value="AuctionTime.value"
+                    format="HH:mm:ss:SSS"
+                    style="margin-right: 50px"
+                />
+            </a-card>
+            <Drawer
+                :visible="visible"
+                @close="onClose"
+                :Reason="Reason"
+                :Author="Author"
+                :City="City"
+                :Country="Country"
+                :Email="Email"
+                :Phone="Phone"
             />
-        </a-card>
-    </a-col>
-    <Drawer
-        :visible="visible"
-        @close="onClose"
-        :Reason="Reason"
-        :Author="Author"
-        :City="City"
-        :Country="Country"
-        :Email="Email"
-        :Phone="Phone"
-    />
+        </a-col>
+    </Transition>
 </template>
 <script setup>
 import {
@@ -106,8 +117,12 @@ import {
 } from "@ant-design/icons-vue"
 import { message } from "ant-design-vue"
 import Drawer from "../Drawer/Drawer.vue"
-import { ref, computed } from "vue"
+import { ref, computed, Transition } from "vue"
 const key = "updatable"
+const ended = ref(true)
+function AuctionEnd() {
+    ended.value = false
+}
 const openMessage = () => {
     message.loading({
         content: "Loading...",
@@ -196,6 +211,16 @@ const onTabChange = (value) => {
 }
 </script>
 <style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
 .title {
     text-align: center;
 }
