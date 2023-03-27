@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-27 18:08:34
+ * @LastEditTime: 2023-03-27 21:39:50
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -101,6 +101,11 @@
                 :Country="Country"
                 :Email="Email"
                 :Phone="Phone"
+                :OrderName="OrderName"
+                :type="type"
+                :OrderDescription="OrderDetailDescription"
+                :columns="columns"
+                :dataSource="dataSource"
             />
         </a-col>
     </Transition>
@@ -163,6 +168,10 @@ const props = defineProps([
     "Country",
     "Email",
     "Phone",
+    "type",
+    "OrderDetailDescription",
+    "columns",
+    "dataSource",
 ])
 const visible = ref(false)
 

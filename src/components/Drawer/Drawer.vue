@@ -1,7 +1,15 @@
+<!--
+ * @Author: cheri 1156429007@qq.com
+ * @Date: 2023-03-27 14:10:21
+ * @LastEditors: cheri 1156429007@qq.com
+ * @LastEditTime: 2023-03-27 21:47:11
+ * @FilePath: /web3_auction/src/components/Drawer/Drawer.vue
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <template>
     <a-drawer width="640" placement="right" :closable="false" :visible="visible">
-        <p :style="[pStyle, pStyle2]">卖家信息</p>
-        <p :style="pStyle">Personal</p>
+        <p :style="[pStyle, pStyle2]">Details</p>
+        <p :style="pStyle">商家信息</p>
         <a-row>
             <a-col :span="12">
                 <description-item title="姓名" :content="Author" />
@@ -22,43 +30,15 @@
             </a-col>
         </a-row>
         <a-row>
-            <a-col :span="12">
+            <a-col :span="24">
                 <description-item title="描述信息" :content="Reason" />
             </a-col>
         </a-row>
         <a-divider />
-        <p :style="pStyle">Company</p>
+        <p :style="pStyle">联系方式</p>
         <a-row>
             <a-col :span="12">
-                <description-item title="Position" content="Programmer" />
-            </a-col>
-            <a-col :span="12">
-                <description-item title="Responsibilities" content="Coding" />
-            </a-col>
-        </a-row>
-        <a-row>
-            <a-col :span="12">
-                <description-item title="Department" content="XTech" />
-            </a-col>
-            <a-col :span="12">
-                <description-item title="Supervisor">
-                    <template #content><a>Lin</a></template>
-                </description-item>
-            </a-col>
-        </a-row>
-        <a-row>
-            <a-col :span="24">
-                <description-item
-                    title="Skills"
-                    content="C / C + +, data structures, software engineering, operating systems, computer networks, databases, compiler theory, computer architecture, Microcomputer Principle and Interface Technology, Computer English, Java, ASP, etc."
-                />
-            </a-col>
-        </a-row>
-        <a-divider />
-        <p :style="pStyle">Contacts</p>
-        <a-row>
-            <a-col :span="12">
-                <description-item title="Email">
+                <description-item title="邮箱">
                     <template #content>
                         <a :href="'mailto:' + Email">
                             {{ Email }}
@@ -67,7 +47,7 @@
                 </description-item>
             </a-col>
             <a-col :span="12">
-                <description-item title="Phone Number">
+                <description-item title="联系电话">
                     <template #content>
                         <a :href="'tel:' + Phone">
                             {{ Phone }}
@@ -76,22 +56,46 @@
                 </description-item>
             </a-col>
         </a-row>
+        <a-divider></a-divider>
+        <p :style="pStyle">商品详情</p>
+        <a-row>
+            <a-col :span="12">
+                <description-item title="商品名称" :content="OrderName" />
+            </a-col>
+            <a-col :span="12">
+                <description-item title="商品类别" :content="type" />
+            </a-col>
+        </a-row>
         <a-row>
             <a-col :span="24">
-                <description-item title="Github">
-                    <template #content>
-                        <a href="https://github.com/vueComponent/ant-design-vue">
-                            github.com/vueComponent/ant-design-vue
-                        </a>
-                    </template>
-                </description-item>
+                <description-item title="商品描述" :content="OrderDescription" />
+            </a-col>
+        </a-row>
+        <a-divider></a-divider>
+        <p :style="pStyle">参数详情</p>
+        <a-row>
+            <a-col :span="24">
+                <a-table :scroll="{ x: 1000 }" :dataSource="dataSource" :columns="columns" />
             </a-col>
         </a-row>
     </a-drawer>
 </template>
 <script setup>
 import DescriptionItem from "../Description/DescriptionItem.vue"
-defineProps(["visible", "Author", "Reason", "City", "Country", "Email", "Phone"])
+defineProps([
+    "visible",
+    "Author",
+    "Reason",
+    "City",
+    "Country",
+    "Email",
+    "Phone",
+    "OrderName",
+    "type",
+    "OrderDescription",
+    "columns",
+    "dataSource",
+])
 const pStyle = {
     fontSize: "16px",
     color: "rgba(0,0,0,0.85)",
