@@ -49,6 +49,11 @@ const orders = [
         avatarSrc: avatarArray[getRandomInt()],
         AuctionTime: Date.now() + 1000 * 60 * 60 * 24 * 1,
         TopBidding: ref(20),
+        Reason: "I want to play games so I get a new Xbox Series X",
+        City: "Shanghai",
+        Country: "China🇨🇳",
+        Email: "XuCheri@gmail.com",
+        Phone: "+86 18872905868",
     },
     {
         ID: 2,
@@ -62,6 +67,11 @@ const orders = [
         avatarSrc: avatarArray[getRandomInt()],
         AuctionTime: Date.now() + 1000 * 60 * 60 * 24 * 1.5,
         TopBidding: ref(135),
+        Reason: "I need money so I want to sell my car",
+        City: "Xiamen",
+        Country: "China🇨",
+        Email: "abcexample@qq.com",
+        Phone: "+86 12345678901",
     },
 ]
 function getRandomInt() {
@@ -96,6 +106,11 @@ function NoWantsAdd(order) {
             :avatarSrc="order.avatarSrc"
             :AuctionTime="order.AuctionTime"
             :TopBidding="order.TopBidding"
+            :Reason="order.Reason"
+            :City="order.City"
+            :Country="order.Country"
+            :Email="order.Email"
+            :Phone="order.Phone"
             @LikesAdd="LikesAdd(order)"
             @WantsAdd="WantsAdd(order)"
             @NoLikesAdd="NoLikesAdd(order)"

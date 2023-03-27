@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-27 14:14:44
+ * @LastEditTime: 2023-03-27 16:02:01
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -31,7 +31,7 @@
                 <like-two-tone v-else="Liked" @click="NoLikes" />
                 <star-outlined v-if="!Wanted" key="edit" @click="Wants" />
                 <star-two-tone v-else="Wanted" @click="NoWants" />
-                <a-popover :title="`Bid for ${OrderName}`">
+                <a-popover :title="`Bid for ${OrderName} with`">
                     <template #content>
                         <a-input-number
                             v-model:value="BidPrice"
@@ -79,7 +79,16 @@
             />
         </a-card>
     </a-col>
-    <Drawer :visible="visible" @close="onClose" />
+    <Drawer
+        :visible="visible"
+        @close="onClose"
+        :Reason="Reason"
+        :Author="Author"
+        :City="City"
+        :Country="Country"
+        :Email="Email"
+        :Phone="Phone"
+    />
 </template>
 <script setup>
 import {
@@ -104,6 +113,11 @@ const props = defineProps([
     "avatarSrc",
     "AuctionTime",
     "TopBidding",
+    "Reason",
+    "City",
+    "Country",
+    "Email",
+    "Phone",
 ])
 const visible = ref(false)
 

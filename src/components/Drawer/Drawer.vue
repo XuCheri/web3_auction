@@ -1,37 +1,29 @@
 <template>
     <a-drawer width="640" placement="right" :closable="false" :visible="visible">
-        <p :style="[pStyle, pStyle2]">User Profile</p>
+        <p :style="[pStyle, pStyle2]">卖家信息</p>
         <p :style="pStyle">Personal</p>
         <a-row>
             <a-col :span="12">
-                <description-item title="Full Name" content="Lily" />
+                <description-item title="姓名" :content="Author" />
             </a-col>
-            <a-col :span="12">
-                <description-item title="Account" content="AntDesign@example.com" />
-            </a-col>
-        </a-row>
-        <a-row>
-            <a-col :span="12">
-                <description-item title="City" content="HangZhou" />
-            </a-col>
-            <a-col :span="12">
-                <description-item title="Country" content="China🇨🇳" />
-            </a-col>
-        </a-row>
-        <a-row>
-            <a-col :span="12">
-                <description-item title="Birthday" content="February 2,1900" />
-            </a-col>
-            <a-col :span="12">
-                <description-item title="Website" content="-" />
-            </a-col>
-        </a-row>
-        <a-row>
             <a-col :span="12">
                 <description-item
-                    title="Message"
-                    content="Make things as simple as possible but no simpler."
+                    title="钱包地址"
+                    content="0xA34323DB7bEa9238202c7A866cDA9977CBA8ff6f"
                 />
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-col :span="12">
+                <description-item title="城市" :content="City" />
+            </a-col>
+            <a-col :span="12">
+                <description-item title="国籍" :content="Country" />
+            </a-col>
+        </a-row>
+        <a-row>
+            <a-col :span="12">
+                <description-item title="描述信息" :content="Reason" />
             </a-col>
         </a-row>
         <a-divider />
@@ -66,10 +58,22 @@
         <p :style="pStyle">Contacts</p>
         <a-row>
             <a-col :span="12">
-                <description-item title="Email" content="ant-design-vue@example.com" />
+                <description-item title="Email">
+                    <template #content>
+                        <a :href="'mailto:' + Email">
+                            {{ Email }}
+                        </a>
+                    </template>
+                </description-item>
             </a-col>
             <a-col :span="12">
-                <description-item title="Phone Number" content="+86 181 0000 0000" />
+                <description-item title="Phone Number">
+                    <template #content>
+                        <a :href="'tel:' + Phone">
+                            {{ Phone }}
+                        </a>
+                    </template>
+                </description-item>
             </a-col>
         </a-row>
         <a-row>
@@ -87,7 +91,7 @@
 </template>
 <script setup>
 import DescriptionItem from "../Description/DescriptionItem.vue"
-defineProps(["visible"])
+defineProps(["visible", "Author", "Reason", "City", "Country", "Email", "Phone"])
 const pStyle = {
     fontSize: "16px",
     color: "rgba(0,0,0,0.85)",
