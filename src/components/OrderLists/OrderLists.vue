@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-26 21:55:45
+ * @LastEditTime: 2023-03-27 14:14:44
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -22,6 +22,7 @@
             </a-card-meta>
             <a-card-meta :title="OrderName" v-show="key == 'tab2'" :description="OrderDescription">
             </a-card-meta>
+            <template #extra><a @click="showDrawer">Details</a></template>
             <template #cover>
                 <img alt="example" :src="imgsrc" />
             </template>
@@ -34,14 +35,14 @@
                     <template #content>
                         <a-input-number
                             v-model:value="BidPrice"
-                            :min="props.TopBidding.value + 0.1"
+                            :min="props.TopBidding.value + 1"
                             :max="10000000"
-                            :step="0.1"
+                            :step="1"
                             style="width: 80%"
                         />
                         <label for="">ETH</label>
                     </template>
-                    <pay-circle-filled key="pay" />
+                    <pay-circle-filled key="pay" @click="Bid" />
                 </a-popover>
             </template>
             <template #title>
@@ -78,6 +79,7 @@
             />
         </a-card>
     </a-col>
+    <Drawer :visible="visible" @close="onClose" />
 </template>
 <script setup>
 import {
@@ -89,6 +91,7 @@ import {
     StarTwoTone,
     TransactionOutlined,
 } from "@ant-design/icons-vue"
+import Drawer from "../Drawer/Drawer.vue"
 import { ref, computed } from "vue"
 const props = defineProps([
     "Author",
@@ -102,16 +105,31 @@ const props = defineProps([
     "AuctionTime",
     "TopBidding",
 ])
+const visible = ref(false)
+
+const showDrawer = () => {
+    visible.value = true
+}
+const onClose = () => {
+    visible.value = false
+}
 const TopPrice = computed(() => {
     return props.TopBidding.value + "ETH"
 })
-const BidPrice = ref(props.TopBidding.value + 0.1 || 0)
+const BidPrice = ref(props.TopBidding.value + 1 || 0)
 const Liked = ref(false)
 const Wanted = ref(false)
 const emit = defineEmits(["LikesAdd", "WantsAdd", "NoWantsAdd", "NoLikesAdd"])
 const Likes = () => {
     emit("LikesAdd")
     Liked.value = true
+}
+const Bid = () => {
+    if (BidPrice.value >= props.TopBidding.value + 0.1) {
+        props.TopBidding.value = BidPrice.value
+    } else {
+        alert("竞拍价格必须大于当前最高竞拍价格")
+    }
 }
 const NoLikes = () => {
     emit("NoLikesAdd")
