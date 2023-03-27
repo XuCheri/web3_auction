@@ -117,4 +117,5 @@ function NoWantsAdd(order) {
             @NoWantsAdd="NoWantsAdd(order)"
         />
     </a-row>
+    <a-back-top />
 </template>

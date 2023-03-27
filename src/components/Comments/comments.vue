@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-21 12:51:01
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-26 09:18:59
+ * @LastEditTime: 2023-03-27 17:33:41
  * @FilePath: /web3_auction/src/components/Comments/comments.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -44,7 +44,7 @@
                     type="primary"
                     @click="handleSubmit"
                 >
-                    Add Comment
+                    Add a Comment
                 </a-button>
             </a-form-item>
         </template>
@@ -52,6 +52,7 @@
 </template>
 <script>
 import { defineComponent, ref, onMounted } from "vue"
+import { message } from "ant-design-vue"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 dayjs.extend(relativeTime)
@@ -123,6 +124,7 @@ export default defineComponent({
                     ...comments.value,
                 ]
                 value.value = ""
+                message.success("评论成功")
             }, 1000)
         }
         return {

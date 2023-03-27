@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-27 16:02:01
+ * @LastEditTime: 2023-03-27 17:38:03
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -12,15 +12,19 @@
             hoverable
             style="width: 350px"
             :tab-list="tabList"
-            :active-tab-key="key"
-            @tabChange="(key) => onTabChange(key)"
+            :active-tab-key="Tabkey"
+            @tabChange="(Tabkey) => onTabChange(Tabkey)"
         >
-            <a-card-meta v-show="key == 'tab1'" :title="Author" :description="AuthorDescription">
+            <a-card-meta v-show="Tabkey == 'tab1'" :title="Author" :description="AuthorDescription">
                 <template #avatar>
                     <a-avatar :src="avatarSrc" />
                 </template>
             </a-card-meta>
-            <a-card-meta :title="OrderName" v-show="key == 'tab2'" :description="OrderDescription">
+            <a-card-meta
+                :title="OrderName"
+                v-show="Tabkey == 'tab2'"
+                :description="OrderDescription"
+            >
             </a-card-meta>
             <template #extra><a @click="showDrawer">Details</a></template>
             <template #cover>
@@ -42,7 +46,7 @@
                         />
                         <label for="">ETH</label>
                     </template>
-                    <pay-circle-filled key="pay" @click="Bid" />
+                    <pay-circle-filled key="pay" @click="openMessage" />
                 </a-popover>
             </template>
             <template #title>
@@ -100,8 +104,34 @@ import {
     StarTwoTone,
     TransactionOutlined,
 } from "@ant-design/icons-vue"
+import { message } from "ant-design-vue"
 import Drawer from "../Drawer/Drawer.vue"
 import { ref, computed } from "vue"
+const key = "updatable"
+const openMessage = () => {
+    message.loading({
+        content: "Loading...",
+        key,
+    })
+    if (BidPrice.value >= props.TopBidding.value + 1) {
+        setTimeout(() => {
+            props.TopBidding.value = BidPrice.value
+            message.success({
+                content: "Bid Success!",
+                key,
+                duration: 2,
+            })
+        }, 1000)
+    } else {
+        setTimeout(() => {
+            message.error({
+                content: "Bid Price must be higher than Top Bidding",
+                key,
+                duration: 4,
+            })
+        }, 2500)
+    }
+}
 const props = defineProps([
     "Author",
     "AuthorDescription",
@@ -138,13 +168,6 @@ const Likes = () => {
     emit("LikesAdd")
     Liked.value = true
 }
-const Bid = () => {
-    if (BidPrice.value >= props.TopBidding.value + 0.1) {
-        props.TopBidding.value = BidPrice.value
-    } else {
-        alert("竞拍价格必须大于当前最高竞拍价格")
-    }
-}
 const NoLikes = () => {
     emit("NoLikesAdd")
     Liked.value = false
@@ -167,13 +190,9 @@ const tabList = [
         tab: "商品介绍",
     },
 ]
-const contentList = {
-    tab1: "content1",
-    tab2: "content2",
-}
-const key = ref("tab1")
+const Tabkey = ref("tab1")
 const onTabChange = (value) => {
-    key.value = value
+    Tabkey.value = value
 }
 </script>
 <style scoped>
