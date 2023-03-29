@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-29 16:37:10
+ * @LastEditTime: 2023-03-29 20:24:38
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -17,7 +17,9 @@ onBeforeMount(() => {
             item.LikesValue = ref(item.LikesValue)
             item.WantsValue = ref(item.WantsValue)
             item.TopBidding = ref(item.TopBidding)
-            item.AuctionTime = ref(item.AuctionTime + Date.now())
+            item.AuctionTime = ref(
+                new Date(item.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60
+            )
         })
         orders.value = res.data
     })

@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-29 15:31:32
+ * @LastEditTime: 2023-03-29 20:06:09
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -118,7 +118,12 @@ import {
 } from "@ant-design/icons-vue"
 import { message } from "ant-design-vue"
 import Drawer from "../Drawer/Drawer.vue"
-import { ref, computed, Transition } from "vue"
+import { ref, computed, Transition, onBeforeMount } from "vue"
+onBeforeMount(() => {
+    if (props.AuctionTime.value - Date.now() <= 0) {
+        ended.value = false
+    }
+})
 const key = "updatable"
 const ended = ref(true)
 function AuctionEnd() {
