@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-29 15:30:33
+ * @LastEditTime: 2023-03-29 16:29:01
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -23,19 +23,35 @@ onBeforeMount(() => {
     })
 })
 let orders = ref([])
-function LikesAdd(order) {
+async function LikesAdd(order) {
+    await axios.get("http://localhost:3000/api/Likes?", {
+        params: {
+            ID: order.ID,
+        },
+    })
     orders.value[order.ID - 1].LikesValue++
 }
 function WantsAdd(order) {
     orders.value[order.ID - 1].WantsValue++
 }
-function NoLikesAdd(order) {
+async function NoLikesAdd(order) {
+    await axios.get("http://localhost:3000/api/NoLikes?", {
+        params: {
+            ID: order.ID,
+        },
+    })
     orders.value[order.ID - 1].LikesValue--
 }
 function NoWantsAdd(order) {
     orders.value[order.ID - 1].WantsValue--
 }
-function bid(order, NewBidPrice) {
+async function bid(order, NewBidPrice) {
+    await axios.get("http://localhost:3000/api/bid?", {
+        params: {
+            ID: order.ID,
+            TopBidding: NewBidPrice,
+        },
+    })
     orders.value[order.ID - 1].TopBidding = NewBidPrice
 }
 </script>
