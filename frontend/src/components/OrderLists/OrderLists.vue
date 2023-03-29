@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-27 21:39:50
+ * @LastEditTime: 2023-03-29 15:31:32
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -51,7 +51,7 @@
                             />
                             <label for="">ETH</label>
                         </template>
-                        <pay-circle-filled key="pay" @click="openMessage" />
+                        <pay-circle-filled key="pay" @click="bid" />
                     </a-popover>
                 </template>
                 <template #title>
@@ -59,18 +59,14 @@
                 </template>
                 <a-row :gutter="[24, 10]">
                     <a-col :span="8">
-                        <a-statistic
-                            title="Likes"
-                            :value="LikesValue.value"
-                            style="margin-right: 50px"
-                        >
+                        <a-statistic title="Likes" :value="LikesValue" style="margin-right: 50px">
                             <template #suffix>
                                 <like-outlined />
                             </template>
                         </a-statistic>
                     </a-col>
                     <a-col :span="8">
-                        <a-statistic title="Wants" :value="WantsValue.value">
+                        <a-statistic title="Wants" :value="WantsValue">
                             <template #suffix>
                                 <star-outlined />
                             </template>
@@ -128,30 +124,6 @@ const ended = ref(true)
 function AuctionEnd() {
     ended.value = false
 }
-const openMessage = () => {
-    message.loading({
-        content: "Loading...",
-        key,
-    })
-    if (BidPrice.value >= props.TopBidding.value + 1) {
-        setTimeout(() => {
-            props.TopBidding.value = BidPrice.value
-            message.success({
-                content: "Bid Success!",
-                key,
-                duration: 2,
-            })
-        }, 1000)
-    } else {
-        setTimeout(() => {
-            message.error({
-                content: "Bid Price must be higher than Top Bidding",
-                key,
-                duration: 4,
-            })
-        }, 2500)
-    }
-}
 const props = defineProps([
     "Author",
     "AuthorDescription",
@@ -172,6 +144,7 @@ const props = defineProps([
     "OrderDetailDescription",
     "columns",
     "dataSource",
+    "order",
 ])
 const visible = ref(false)
 
@@ -187,7 +160,33 @@ const TopPrice = computed(() => {
 const BidPrice = ref(props.TopBidding.value + 1 || 0)
 const Liked = ref(false)
 const Wanted = ref(false)
-const emit = defineEmits(["LikesAdd", "WantsAdd", "NoWantsAdd", "NoLikesAdd"])
+const emit = defineEmits(["LikesAdd", "WantsAdd", "NoWantsAdd", "NoLikesAdd", "bid"])
+const bid = () => {
+    message.loading({
+        content: "Loading...",
+        key,
+    })
+    if (BidPrice.value >= props.TopBidding.value + 1) {
+        setTimeout(() => {
+            emit("bid", props.order, BidPrice.value)
+
+            // props.TopBidding.value = BidPrice.value
+            message.success({
+                content: "Bid Success!",
+                key,
+                duration: 2,
+            })
+        }, 1000)
+    } else {
+        setTimeout(() => {
+            message.error({
+                content: "Bid Price must be higher than Top Bidding",
+                key,
+                duration: 4,
+            })
+        }, 2500)
+    }
+}
 const Likes = () => {
     emit("LikesAdd")
     Liked.value = true
