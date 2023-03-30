@@ -57,7 +57,9 @@
                     </router-link>
                 </a-menu-item>
                 <a-menu-item v-if="connected" key="10">
-                    <span><user-outlined /> {{ ID }}</span>
+                    <router-link to="/user">
+                        <span><user-outlined /> {{ ID }}</span>
+                    </router-link>
                 </a-menu-item>
             </a-menu>
             <div class="darkMode">

@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-21 12:51:01
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-27 17:33:41
+ * @LastEditTime: 2023-03-30 18:12:13
  * @FilePath: /web3_auction/src/components/Comments/comments.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -51,43 +51,30 @@
     </a-comment>
 </template>
 <script>
-import { defineComponent, ref, onMounted } from "vue"
+import { defineComponent, ref, onMounted, onBeforeMount } from "vue"
 import { message } from "ant-design-vue"
 import dayjs from "dayjs"
+import axios from "axios"
 import relativeTime from "dayjs/plugin/relativeTime"
 dayjs.extend(relativeTime)
 export default defineComponent({
     setup() {
-        const avatarArray = [
-            "/avatars/avatar_01.jpg",
-            "/avatars/avatar_02.jpg",
-            "/avatars/avatar_03.jpg",
-            "/avatars/avatar_04.jpg",
-            "/avatars/avatar_05.jpg",
-            "/avatars/avatar_06.jpg",
-            "/avatars/avatar_07.jpg",
-            "/avatars/avatar_08.jpg",
-            "/avatars/avatar_09.jpg",
-            "/avatars/avatar_10.jpg",
-            "/avatars/avatar_11.jpg",
-            "/avatars/avatar_12.jpg",
-            "/avatars/avatar_13.jpg",
-            "/avatars/avatar_14.jpg",
-            "/avatars/avatar_15.jpg",
-            "/avatars/avatar_16.jpg",
-            "/avatars/avatar_17.jpg",
-            "/avatars/avatar_18.jpg",
-            "/avatars/avatar_19.jpg",
-            "/avatars/avatar_20.jpg",
-            "/avatars/avatar_21.jpg",
-        ]
         const connected = ref(true)
         const comments = ref([])
         const submitting = ref(false)
         const value = ref("")
-        function getRandomInt() {
-            return Math.floor(Math.random() * 21)
-        }
+        const accountsName = ref("")
+        // console.log(new Date().)
+        onBeforeMount(async () => {
+            await axios.get("http://localhost:3000/api/getComments").then((res) => {
+                for (const iterator of res.data) {
+                    iterator.datetime = dayjs(
+                        new Date(iterator.datetime.toString()).getTime() - 8 * 1000 * 60 * 60
+                    ).fromNow()
+                }
+                comments.value = res.data
+            })
+        })
         onMounted(async () => {
             const accounts = await window.ethereum.request({
                 method: "eth_accounts",
@@ -95,15 +82,17 @@ export default defineComponent({
             ethereum.on("accountsChanged", handleAccountsChanged)
             if (accounts.length != 0) {
                 connected.value = false
+                accountsName.value = accounts[0]
             }
         })
-
         function handleAccountsChanged(accounts) {
             if (accounts.length === 0) {
                 console.log("Please connect to MetaMask.")
                 connected.value = true
+                accountsName.value = ""
             } else {
                 connected.value = false
+                accountsName.value = accounts[0]
                 console.log("已连接")
             }
         }
@@ -112,17 +101,18 @@ export default defineComponent({
                 return
             }
             submitting.value = true
-            setTimeout(() => {
+            setTimeout(async () => {
                 submitting.value = false
-                comments.value = [
-                    {
-                        author: "Cheri",
-                        avatar: avatarArray[getRandomInt()],
-                        content: value.value,
-                        datetime: dayjs().fromNow(),
-                    },
-                    ...comments.value,
-                ]
+                const req = {
+                    author: accountsName.value,
+                    avatar: "http://localhost:3000/avatars/avatar_12.jpg",
+                    content: value.value,
+                    datetime: new Date(new Date().getTime() + 8 * 1000 * 3600).toISOString(),
+                }
+                await axios.get("http://localhost:3000/api/addComment", {
+                    params: { ...req },
+                })
+                comments.value = [req, ...comments.value]
                 value.value = ""
                 message.success("评论成功")
             }, 1000)
