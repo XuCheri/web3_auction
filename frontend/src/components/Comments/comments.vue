@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-21 12:51:01
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-30 18:12:13
+ * @LastEditTime: 2023-04-01 20:46:54
  * @FilePath: /web3_auction/src/components/Comments/comments.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -26,7 +26,7 @@
     </a-list>
     <a-comment>
         <template #avatar>
-            <a-avatar src="/avatars/avatar_01.jpg" alt="Han Solo" />
+            <a-avatar :src="avatarSrc" alt="Han Solo" />
         </template>
         <template #content>
             <a-form-item>
@@ -64,6 +64,20 @@ export default defineComponent({
         const submitting = ref(false)
         const value = ref("")
         const accountsName = ref("")
+        const user = ref("")
+        const avatarSrc = ref("")
+        const getUserInfo = async () => {
+            axios
+                .get("http://localhost:3000/api/getUsers", {
+                    params: {
+                        Address: accountsName.value,
+                    },
+                })
+                .then((res) => {
+                    user.value = res.data
+                    avatarSrc.value = `http://localhost:3000/avatars/avatar_${user.value.AvatarNum}.jpg`
+                })
+        }
         // console.log(new Date().)
         onBeforeMount(async () => {
             await axios.get("http://localhost:3000/api/getComments").then((res) => {
@@ -84,8 +98,9 @@ export default defineComponent({
                 connected.value = false
                 accountsName.value = accounts[0]
             }
+            await getUserInfo()
         })
-        function handleAccountsChanged(accounts) {
+        async function handleAccountsChanged(accounts) {
             if (accounts.length === 0) {
                 console.log("Please connect to MetaMask.")
                 connected.value = true
@@ -93,7 +108,9 @@ export default defineComponent({
             } else {
                 connected.value = false
                 accountsName.value = accounts[0]
-                console.log("已连接")
+                await getUserInfo()
+
+                console.log("已连接", user.value)
             }
         }
         const handleSubmit = () => {
@@ -104,8 +121,8 @@ export default defineComponent({
             setTimeout(async () => {
                 submitting.value = false
                 const req = {
-                    author: accountsName.value,
-                    avatar: "http://localhost:3000/avatars/avatar_12.jpg",
+                    author: user.value.NickName,
+                    avatar: `http://localhost:3000/avatars/avatar_${user.value.AvatarNum}.jpg`,
                     content: value.value,
                     datetime: new Date(new Date().getTime() + 8 * 1000 * 3600).toISOString(),
                 }
@@ -124,6 +141,7 @@ export default defineComponent({
             value,
             handleSubmit,
             handleAccountsChanged,
+            avatarSrc,
         }
     },
 })
