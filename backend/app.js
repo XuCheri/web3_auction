@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-30 17:41:04
+ * @LastEditTime: 2023-04-01 20:19:04
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -14,6 +14,8 @@ const { NoLikes } = require("./utils/NoLikes");
 const { Wants } = require("./utils/Wants");
 const { NoWants } = require("./utils/NoWants");
 const { AddComment } = require("./utils/AddComment");
+const { getUsers } = require("./utils/getUser");
+const { changeAvatar } = require("./utils/changeAvatar");
 
 // 搭建一个express服务器
 const express = require("express");
@@ -79,5 +81,17 @@ app.get("/api/NoWants", async (req, res) => {
 // 写一个接口增加评论
 app.get("/api/AddComment", async (req, res) => {
   const result = await AddComment(req.query);
+  res.send(result);
+});
+// 写一个接口获取全部用户数据
+app.get("/api/getUsers", async (req, res) => {
+  const { Address } = req.query;
+  const result = await getUsers(Address);
+  res.send(result);
+});
+// 写一个接口改用户头像
+app.get("/api/changeAvatar", async (req, res) => {
+  const { Address, choosedAvatarNum } = req.query;
+  const result = await changeAvatar(Address, choosedAvatarNum);
   res.send(result);
 });

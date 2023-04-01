@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-29 20:06:09
+ * @LastEditTime: 2023-03-31 17:10:12
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -16,21 +16,26 @@
                 :active-tab-key="Tabkey"
                 @tabChange="(Tabkey) => onTabChange(Tabkey)"
             >
-                <a-card-meta
-                    v-show="Tabkey == 'tab1'"
-                    :title="Author"
-                    :description="AuthorDescription"
-                >
-                    <template #avatar>
-                        <a-avatar :src="avatarSrc" />
-                    </template>
-                </a-card-meta>
-                <a-card-meta
-                    :title="OrderName"
-                    v-show="Tabkey == 'tab2'"
-                    :description="OrderDescription"
-                >
-                </a-card-meta>
+                <TransitionGroup name="list">
+                    <a-card-meta
+                        v-show="Tabkey == 'tab1'"
+                        :title="Author"
+                        :description="AuthorDescription"
+                        key="1"
+                    >
+                        <template #avatar>
+                            <a-avatar :src="avatarSrc" />
+                        </template>
+                    </a-card-meta>
+                    <a-card-meta
+                        :title="OrderName"
+                        v-show="Tabkey == 'tab2'"
+                        :description="OrderDescription"
+                        key="2"
+                    >
+                    </a-card-meta>
+                </TransitionGroup>
+
                 <template #extra><a @click="showDrawer">Details</a></template>
                 <template #cover>
                     <img alt="example" :src="imgsrc" />
@@ -236,5 +241,22 @@ const onTabChange = (value) => {
 
 .title {
     text-align: center;
+}
+.list-move, /* 对移动中的元素应用的过渡 */
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+/* 确保将离开的元素从布局流中删除
+  以便能够正确地计算移动的动画。 */
+.list-leave-active {
+    position: absolute;
 }
 </style>
