@@ -37,6 +37,7 @@
             </a-row>
         </Transition>
         <a-divider></a-divider>
+
         <a-col :span="12">
             <a-upload-dragger
                 v-model:fileList="fileList"
