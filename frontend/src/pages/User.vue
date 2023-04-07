@@ -21,7 +21,6 @@
         <a-col class="center" :span="24">
             <p>钱包地址 ：{{ address }}</p>
         </a-col>
-
         <Transition name="bounce">
             <a-row justify="center" v-show="choose_avatar" align="middle" :gutter="[24, 8]">
                 <a-col :span="16">
