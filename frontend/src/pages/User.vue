@@ -21,22 +21,43 @@
         <a-col class="center" :span="24">
             <p>钱包地址 ：{{ address }}</p>
         </a-col>
+        <Transition name="bounce">
+            <a-row justify="center" v-show="choose_avatar" align="middle" :gutter="[24, 8]">
+                <a-col :span="16">
+                    <a-image-preview-group :preview="{ visible, onVisibleChange, current }">
+                        <a-image
+                            style="border-radius: 50%"
+                            v-for="(item, index) in avatarArray"
+                            :width="80"
+                            @click="choose(index)"
+                            :src="item"
+                        />
+                    </a-image-preview-group>
+                </a-col>
+            </a-row>
+        </Transition>
+        <a-divider></a-divider>
+        <a-col :span="12">
+            <a-upload-dragger
+                v-model:fileList="fileList"
+                name="avatar"
+                :multiple="true"
+                action="http://localhost:3000/api/upload"
+                @change="handleChange"
+                @drop="handleDrop"
+            >
+                <p class="ant-upload-drag-icon">
+                    <inbox-outlined></inbox-outlined>
+                </p>
+                <p class="ant-upload-text">Click or drag file to this area to upload</p>
+                <p class="ant-upload-hint">
+                    Support for a single or bulk upload. Strictly prohibit from uploading company
+                    data or other band files
+                </p>
+            </a-upload-dragger>
+        </a-col>
     </a-row>
-    <Transition name="bounce">
-        <a-row justify="center" v-show="choose_avatar" align="middle" :gutter="[24, 8]">
-            <a-col :span="16">
-                <a-image-preview-group :preview="{ visible, onVisibleChange, current }">
-                    <a-image
-                        style="border-radius: 50%"
-                        v-for="(item, index) in avatarArray"
-                        :width="80"
-                        @click="choose(index)"
-                        :src="item"
-                    />
-                </a-image-preview-group>
-            </a-col>
-        </a-row>
-    </Transition>
+
     <a-row justify="center" align="middle" :gutter="[24, 8]"> asdsa </a-row>
 </template>
 <style scoped>
@@ -73,11 +94,16 @@
 </style>
 <script setup>
 import { ref, onBeforeMount } from "vue"
-import { UserOutlined } from "@ant-design/icons-vue"
+import { message } from "ant-design-vue"
+import { UserOutlined, InboxOutlined } from "@ant-design/icons-vue"
 import axios from "axios"
 function choose(index) {
     current.value = index
     avatarSrc.value = avatarArray[index]
+}
+const fileList = ref([])
+const handleDrop = (e) => {
+    console.log(e, 1)
 }
 const NickName = ref("")
 const choose_avatar = ref(false)
@@ -106,9 +132,22 @@ const getUserInfo = async () => {
             },
         })
         .then((res) => {
+            current.value = res.data.AvatarNum - 1
             NickName.value = res.data.NickName
             avatarSrc.value = `http://localhost:3000/avatars/avatar_${res.data.AvatarNum}.jpg`
         })
+}
+const handleChange = (info) => {
+    const status = info.file.status
+    if (status !== "uploading") {
+        // console.log(info.file, info.fileList)
+        console.log(info.file.response)
+    }
+    if (status === "done") {
+        message.success(`${info.file.name} file uploaded successfully.`)
+    } else if (status === "error") {
+        message.error(`${info.file.name} file upload failed.`)
+    }
 }
 const avatarSrc = ref("")
 const address = ref("")

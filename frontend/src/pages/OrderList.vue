@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-03-29 20:24:38
+ * @LastEditTime: 2023-04-07 18:50:52
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -91,6 +91,7 @@ async function bid(order, NewBidPrice) {
             :OrderDetailDescription="order.OrderDetailDescription"
             :columns="order.columns"
             :dataSource="order.dataSource"
+            :address="order.Address"
             :order="order"
             @bid="bid"
             @LikesAdd="LikesAdd(order)"

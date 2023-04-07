@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-01 20:19:04
+ * @LastEditTime: 2023-04-07 18:42:09
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -19,8 +19,11 @@ const { changeAvatar } = require("./utils/changeAvatar");
 
 // 搭建一个express服务器
 const express = require("express");
+const multer = require("multer");
+const path = require("path");
 const app = express();
 const port = 3000;
+
 // 设置跨域
 app.all("*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); //仅支持配置一个域名
@@ -32,12 +35,49 @@ app.all("*", function (req, res, next) {
   res.header("Access-Control-Allow-Credentials", true); //允许客户端携带验证信息
   next();
 });
-// 保存静态资源
-app.use(express.static("public"));
-// 服务器监听端口
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+// 设置存储路径和文件名
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/img");
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + Date.now() + ext);
+  },
 });
+
+// 设置上传限制和存储路径
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 2, // 2MB
+  },
+  fileFilter: function (req, file, cb) {
+    const allowedMimes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/svg+xml",
+      "image/bmp",
+      "image/webp",
+      "image/vnd.microsoft.icon",
+    ];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Uploaded file is not an image!"), false);
+    }
+  },
+});
+// 处理上传请求
+app.post("/api/upload", upload.single("avatar"), (req, res) => {
+  app.use(express.static("public"));
+  const filename = req.file.filename;
+  const filepath = req.file.path;
+  res.send(filepath);
+});
+
 // 写一个接口获取全部商品数据
 app.get("/api/getOrders", async (req, res) => {
   const result = await getOrders();
@@ -94,4 +134,11 @@ app.get("/api/changeAvatar", async (req, res) => {
   const { Address, choosedAvatarNum } = req.query;
   const result = await changeAvatar(Address, choosedAvatarNum);
   res.send(result);
+});
+
+// 保存静态资源
+app.use(express.static("public"));
+// 服务器监听端口
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
 });
