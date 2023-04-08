@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-07 18:42:09
+ * @LastEditTime: 2023-04-08 18:22:39
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -16,6 +16,7 @@ const { NoWants } = require("./utils/NoWants");
 const { AddComment } = require("./utils/AddComment");
 const { getUsers } = require("./utils/getUser");
 const { changeAvatar } = require("./utils/changeAvatar");
+const { searchOrder } = require("./utils/searchOrder");
 
 // 搭建一个express服务器
 const express = require("express");
@@ -94,6 +95,13 @@ app.get("/api/Bid", async (req, res) => {
   const result = await Bid(ID, TopBidding);
   res.send(result);
 });
+// 写一个接口搜索商品
+app.get("/api/searchOrder", async (req, res) => {
+  const { OrderName } = req.query;
+  const result = await searchOrder(OrderName);
+  res.send(result);
+});
+
 // 写一个接口增加点赞数
 app.get("/api/Likes", async (req, res) => {
   const { ID } = req.query;

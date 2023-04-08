@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-07 18:50:52
+ * @LastEditTime: 2023-04-08 18:10:39
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -11,8 +11,20 @@
 import OrderLists from "@/components/OrderLists/OrderLists.vue"
 import { ref, onBeforeMount, reactive } from "vue"
 import axios from "axios"
+const haveOrder = ref(true)
 onBeforeMount(() => {
     axios.get("http://localhost:3000/api/getOrders").then((res) => {
+        for (const i of res.data) {
+            console.log(
+                new Date(i.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60 - Date.now()
+            )
+            if (
+                new Date(i.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60 - Date.now() >
+                0
+            ) {
+                haveOrder.value = false
+            }
+        }
         res.data.map((item) => {
             item.LikesValue = ref(item.LikesValue)
             item.WantsValue = ref(item.WantsValue)
@@ -24,6 +36,11 @@ onBeforeMount(() => {
         orders.value = res.data
     })
 })
+const value = ref("")
+const onSearch = (searchValue) => {
+    console.log("use value", searchValue)
+    console.log("or use this.value", value.value)
+}
 let orders = ref([])
 async function LikesAdd(order) {
     await axios.get("http://localhost:3000/api/Likes?", {
@@ -68,6 +85,19 @@ async function bid(order, NewBidPrice) {
 }
 </script>
 <template>
+    <a-empty v-if="haveOrder"></a-empty>
+
+    <a-row>
+        <a-col :span="6">
+            <a-input-search
+                v-model:value="value"
+                placeholder="input search text"
+                enter-button
+                @search="onSearch"
+            />
+        </a-col>
+    </a-row>
+    <a-divider></a-divider>
     <a-row :gutter="[24, 8]">
         <OrderLists
             v-for="order in orders"
