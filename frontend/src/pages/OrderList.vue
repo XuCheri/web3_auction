@@ -2,22 +2,19 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-08 18:10:39
+ * @LastEditTime: 2023-04-08 20:08:56
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <script setup>
-// import OrderList from "@/components/OrderList/OrderList.vue"
 import OrderLists from "@/components/OrderLists/OrderLists.vue"
+import Form from "@/components/Form/Form.vue"
 import { ref, onBeforeMount, reactive } from "vue"
 import axios from "axios"
 const haveOrder = ref(true)
 onBeforeMount(() => {
     axios.get("http://localhost:3000/api/getOrders").then((res) => {
         for (const i of res.data) {
-            console.log(
-                new Date(i.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60 - Date.now()
-            )
             if (
                 new Date(i.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60 - Date.now() >
                 0
@@ -37,9 +34,48 @@ onBeforeMount(() => {
     })
 })
 const value = ref("")
-const onSearch = (searchValue) => {
-    console.log("use value", searchValue)
-    console.log("or use this.value", value.value)
+const onSearch = async (searchValue) => {
+    // console.log(searchValue)
+    // console.log("or use this.value", value.value)
+    if (searchValue == "") {
+        axios.get("http://localhost:3000/api/getOrders").then((res) => {
+            for (const i of res.data) {
+                if (
+                    new Date(i.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60 - Date.now() >
+                    0
+                ) {
+                    haveOrder.value = false
+                }
+            }
+            res.data.map((item) => {
+                item.LikesValue = ref(item.LikesValue)
+                item.WantsValue = ref(item.WantsValue)
+                item.TopBidding = ref(item.TopBidding)
+                item.AuctionTime = ref(
+                    new Date(item.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60
+                )
+            })
+            orders.value = res.data
+        })
+        return
+    }
+    await axios
+        .get("http://localhost:3000/api/searchOrder?", {
+            params: {
+                OrderName: searchValue,
+            },
+        })
+        .then((res) => {
+            res.data.map((item) => {
+                item.LikesValue = ref(item.LikesValue)
+                item.WantsValue = ref(item.WantsValue)
+                item.TopBidding = ref(item.TopBidding)
+                item.AuctionTime = ref(
+                    new Date(item.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60
+                )
+            })
+            orders.value = res.data
+        })
 }
 let orders = ref([])
 async function LikesAdd(order) {
@@ -86,9 +122,8 @@ async function bid(order, NewBidPrice) {
 </script>
 <template>
     <a-empty v-if="haveOrder"></a-empty>
-
-    <a-row>
-        <a-col :span="6">
+    <a-row justify="space-between">
+        <a-col :span="6" v-if="!haveOrder">
             <a-input-search
                 v-model:value="value"
                 placeholder="input search text"
@@ -96,39 +131,53 @@ async function bid(order, NewBidPrice) {
                 @search="onSearch"
             />
         </a-col>
+        <a-col :span="6"><Form /></a-col>
     </a-row>
-    <a-divider></a-divider>
+    <a-divider v-if="!haveOrder">商品列表</a-divider>
     <a-row :gutter="[24, 8]">
-        <OrderLists
-            v-for="order in orders"
-            :key="order.ID"
-            :Author="order.Author"
-            :AuthorDescription="order.AuthorDescription"
-            :OrderName="order.OrderName"
-            :OrderDescription="order.OrderDescription"
-            :imgsrc="order.imgsrc"
-            :LikesValue="order.LikesValue"
-            :WantsValue="order.WantsValue"
-            :avatarSrc="order.avatarSrc"
-            :AuctionTime="ref(order.AuctionTime)"
-            :TopBidding="ref(order.TopBidding)"
-            :Reason="order.Reason"
-            :City="order.City"
-            :Country="order.Country"
-            :Email="order.Email"
-            :Phone="order.Phone"
-            :type="order.type"
-            :OrderDetailDescription="order.OrderDetailDescription"
-            :columns="order.columns"
-            :dataSource="order.dataSource"
-            :address="order.Address"
-            :order="order"
-            @bid="bid"
-            @LikesAdd="LikesAdd(order)"
-            @WantsAdd="WantsAdd(order)"
-            @NoLikesAdd="NoLikesAdd(order)"
-            @NoWantsAdd="NoWantsAdd(order)"
-        />
+        <TransitionGroup name="fade">
+            <OrderLists
+                v-for="order in orders"
+                :key="order.ID"
+                :Author="order.Author"
+                :AuthorDescription="order.AuthorDescription"
+                :OrderName="order.OrderName"
+                :OrderDescription="order.OrderDescription"
+                :imgsrc="order.imgsrc"
+                :LikesValue="order.LikesValue"
+                :WantsValue="order.WantsValue"
+                :avatarSrc="order.avatarSrc"
+                :AuctionTime="ref(order.AuctionTime)"
+                :TopBidding="ref(order.TopBidding)"
+                :Reason="order.Reason"
+                :City="order.City"
+                :Country="order.Country"
+                :Email="order.Email"
+                :Phone="order.Phone"
+                :type="order.type"
+                :OrderDetailDescription="order.OrderDetailDescription"
+                :columns="order.columns"
+                :dataSource="order.dataSource"
+                :address="order.Address"
+                :order="order"
+                @bid="bid"
+                @LikesAdd="LikesAdd(order)"
+                @WantsAdd="WantsAdd(order)"
+                @NoLikesAdd="NoLikesAdd(order)"
+                @NoWantsAdd="NoWantsAdd(order)"
+            />
+        </TransitionGroup>
     </a-row>
     <a-back-top />
 </template>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>
