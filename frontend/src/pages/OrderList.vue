@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-08 20:08:56
+ * @LastEditTime: 2023-04-10 01:51:16
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -14,6 +14,7 @@ import axios from "axios"
 const haveOrder = ref(true)
 onBeforeMount(() => {
     axios.get("http://localhost:3000/api/getOrders").then((res) => {
+        console.log(res.data)
         for (const i of res.data) {
             if (
                 new Date(i.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60 - Date.now() >
@@ -122,8 +123,8 @@ async function bid(order, NewBidPrice) {
 </script>
 <template>
     <a-empty v-if="haveOrder"></a-empty>
-    <a-row justify="space-between">
-        <a-col :span="6" v-if="!haveOrder">
+    <a-row justify="space-between" style="margin-top: 25px" v-if="!haveOrder">
+        <a-col :span="6">
             <a-input-search
                 v-model:value="value"
                 placeholder="input search text"

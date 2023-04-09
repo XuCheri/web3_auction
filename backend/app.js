@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-08 18:22:39
+ * @LastEditTime: 2023-04-10 01:12:44
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -17,14 +17,18 @@ const { AddComment } = require("./utils/AddComment");
 const { getUsers } = require("./utils/getUser");
 const { changeAvatar } = require("./utils/changeAvatar");
 const { searchOrder } = require("./utils/searchOrder");
+const { addOrder } = require("./utils/addOrder");
 
 // 搭建一个express服务器
 const express = require("express");
 const multer = require("multer");
+const bodyParser = require("body-parser");
 const path = require("path");
 const app = express();
 const port = 3000;
 
+// 解析 application/json 类型的请求
+app.use(bodyParser.json());
 // 设置跨域
 app.all("*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); //仅支持配置一个域名
@@ -99,6 +103,12 @@ app.get("/api/Bid", async (req, res) => {
 app.get("/api/searchOrder", async (req, res) => {
   const { OrderName } = req.query;
   const result = await searchOrder(OrderName);
+  res.send(result);
+});
+// 写一个接口增加商品
+app.post("/api/addOrder", async (req, res) => {
+  console.log(req.body);
+  const result = await addOrder(req.body);
   res.send(result);
 });
 
