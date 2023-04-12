@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-10 01:12:44
+ * @LastEditTime: 2023-04-13 00:05:52
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -111,7 +111,6 @@ app.post("/api/addOrder", async (req, res) => {
   const result = await addOrder(req.body);
   res.send(result);
 });
-
 // 写一个接口增加点赞数
 app.get("/api/Likes", async (req, res) => {
   const { ID } = req.query;

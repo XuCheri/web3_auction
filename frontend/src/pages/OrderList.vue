@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-10 01:51:16
+ * @LastEditTime: 2023-04-13 01:53:04
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -14,14 +14,16 @@ import axios from "axios"
 const haveOrder = ref(true)
 onBeforeMount(() => {
     axios.get("http://localhost:3000/api/getOrders").then((res) => {
-        console.log(res.data)
-        for (const i of res.data) {
-            if (
-                new Date(i.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60 - Date.now() >
-                0
-            ) {
+        for (const [i, index] of res.data.entries()) {
+            if (new Date(index.AuctionTime).getTime() - 8 * 1000 * 60 * 60 - Date.now() > 0) {
                 haveOrder.value = false
+            } else {
+                res.data.splice(i, 1)
             }
+        }
+        if (res.data.length == 0) {
+            haveOrder.value = true
+            return
         }
         res.data.map((item) => {
             item.LikesValue = ref(item.LikesValue)
@@ -36,17 +38,18 @@ onBeforeMount(() => {
 })
 const value = ref("")
 const onSearch = async (searchValue) => {
-    // console.log(searchValue)
-    // console.log("or use this.value", value.value)
     if (searchValue == "") {
         axios.get("http://localhost:3000/api/getOrders").then((res) => {
-            for (const i of res.data) {
-                if (
-                    new Date(i.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60 - Date.now() >
-                    0
-                ) {
+            for (const [i, index] of res.data.entries()) {
+                if (new Date(index.AuctionTime).getTime() - 8 * 1000 * 60 * 60 - Date.now() > 0) {
                     haveOrder.value = false
+                } else {
+                    res.data.splice(i, 1)
                 }
+            }
+            if (res.data.length == 0) {
+                haveOrder.value = true
+                return
             }
             res.data.map((item) => {
                 item.LikesValue = ref(item.LikesValue)
@@ -58,25 +61,43 @@ const onSearch = async (searchValue) => {
             })
             orders.value = res.data
         })
-        return
-    }
-    await axios
-        .get("http://localhost:3000/api/searchOrder?", {
-            params: {
-                OrderName: searchValue,
-            },
-        })
-        .then((res) => {
-            res.data.map((item) => {
-                item.LikesValue = ref(item.LikesValue)
-                item.WantsValue = ref(item.WantsValue)
-                item.TopBidding = ref(item.TopBidding)
-                item.AuctionTime = ref(
-                    new Date(item.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60
-                )
+        return true
+    } else {
+        await axios
+            .get("http://localhost:3000/api/searchOrder?", {
+                params: {
+                    OrderName: searchValue,
+                },
             })
-            orders.value = res.data
-        })
+            .then((res) => {
+                if (res.data.length == 0) {
+                    haveOrder.value = true
+                }
+                for (const [i, index] of res.data.entries()) {
+                    if (
+                        new Date(index.AuctionTime).getTime() - 8 * 1000 * 60 * 60 - Date.now() >
+                        0
+                    ) {
+                        haveOrder.value = false
+                    } else {
+                        res.data.splice(i, 1)
+                    }
+                }
+
+                res.data.map((item) => {
+                    item.LikesValue = ref(item.LikesValue)
+                    item.WantsValue = ref(item.WantsValue)
+                    item.TopBidding = ref(item.TopBidding)
+                    item.AuctionTime = ref(
+                        new Date(item.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60
+                    )
+                })
+                orders.value = res.data
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
 }
 let orders = ref([])
 async function LikesAdd(order) {
@@ -85,7 +106,11 @@ async function LikesAdd(order) {
             ID: order.ID,
         },
     })
-    orders.value[order.ID - 1].LikesValue++
+    for (const iterator of orders.value) {
+        if (iterator.ID == order.ID) {
+            iterator.LikesValue++
+        }
+    }
 }
 async function WantsAdd(order) {
     axios.get("http://localhost:3000/api/Wants?", {
@@ -93,7 +118,11 @@ async function WantsAdd(order) {
             ID: order.ID,
         },
     })
-    orders.value[order.ID - 1].WantsValue++
+    for (const iterator of orders.value) {
+        if (iterator.ID == order.ID) {
+            iterator.WantsValue++
+        }
+    }
 }
 async function NoLikesAdd(order) {
     await axios.get("http://localhost:3000/api/NoLikes?", {
@@ -101,7 +130,11 @@ async function NoLikesAdd(order) {
             ID: order.ID,
         },
     })
-    orders.value[order.ID - 1].LikesValue--
+    for (const iterator of orders.value) {
+        if (iterator.ID == order.ID) {
+            iterator.LikesValue--
+        }
+    }
 }
 async function NoWantsAdd(order) {
     axios.get("http://localhost:3000/api/NoWants?", {
@@ -109,7 +142,11 @@ async function NoWantsAdd(order) {
             ID: order.ID,
         },
     })
-    orders.value[order.ID - 1].WantsValue--
+    for (const iterator of orders.value) {
+        if (iterator.ID == order.ID) {
+            iterator.WantsValue--
+        }
+    }
 }
 async function bid(order, NewBidPrice) {
     await axios.get("http://localhost:3000/api/bid?", {
@@ -118,12 +155,15 @@ async function bid(order, NewBidPrice) {
             TopBidding: NewBidPrice,
         },
     })
-    orders.value[order.ID - 1].TopBidding = NewBidPrice
+    for (const iterator of orders.value) {
+        if (iterator.ID == order.ID) {
+            iterator.TopBidding = NewBidPrice
+        }
+    }
 }
 </script>
 <template>
-    <a-empty v-if="haveOrder"></a-empty>
-    <a-row justify="space-between" style="margin-top: 25px" v-if="!haveOrder">
+    <a-row justify="space-between" style="margin-top: 25px">
         <a-col :span="6">
             <a-input-search
                 v-model:value="value"
@@ -134,6 +174,8 @@ async function bid(order, NewBidPrice) {
         </a-col>
         <a-col :span="6"><Form /></a-col>
     </a-row>
+    <a-empty v-if="haveOrder"></a-empty>
+
     <a-divider v-if="!haveOrder">商品列表</a-divider>
     <a-row :gutter="[24, 8]">
         <TransitionGroup name="fade">
