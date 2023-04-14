@@ -67,15 +67,6 @@ contract Auction {
         return true;
     }
 
-    // function auctionEnd() public {
-    //     require(block.timestamp >= auctionEndTime, "Auction not yet ended.");
-    //     require(!ended, "Auction has already ended.");
-    //     ended = true;
-    //     emit AuctionEnded(highestBidder, highestBid);
-
-    //     // Send the highest bid amount minus the commission to the beneficiary
-    //     beneficiary.transfer(highestBid - commission);
-    // }
     address[] public bidders;
 
     function auctionEnd() public {
