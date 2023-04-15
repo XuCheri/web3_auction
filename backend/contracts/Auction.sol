@@ -28,7 +28,7 @@ contract Auction {
         commission = _commission;
     }
 
-    function bid(uint _validityPeriodSeconds) public payable {
+    function bid() public payable {
         require(block.timestamp <= auctionEndTime, "Auction already ended.");
         require(msg.value >= minimumBid, "Bid amount is below minimum.");
         require(msg.value > highestBid, "Bid amount is below highest bid.");
@@ -44,13 +44,6 @@ contract Auction {
         // Set the new highest bidder
         highestBidder = msg.sender;
         highestBid = msg.value;
-        auctionEndTime =
-            block.timestamp +
-            (
-                _validityPeriodSeconds > 0
-                    ? _validityPeriodSeconds
-                    : biddingTimeExtended
-            );
 
         emit HighestBidIncreased(msg.sender, msg.value);
     }
@@ -67,7 +60,16 @@ contract Auction {
         return true;
     }
 
-    address[] public bidders;
+    // function auctionEnd() public {
+    //     require(block.timestamp >= auctionEndTime, "Auction not yet ended.");
+    //     require(!ended, "Auction has already ended.");
+    //     ended = true;
+    //     emit AuctionEnded(highestBidder, highestBid);
+
+    //     // Send the highest bid amount minus the commission to the beneficiary
+    //     beneficiary.transfer(highestBid - commission);
+    // }
+    address[] private bidders;
 
     function auctionEnd() public {
         require(block.timestamp >= auctionEndTime, "Auction not yet ended.");
@@ -88,7 +90,7 @@ contract Auction {
         beneficiary.transfer(highestBid - commission);
     }
 
-    function highestBidderWithdraw() public {
+    function highestBidderWithdraw() private {
         require(
             msg.sender != highestBidder,
             "You cannot withdraw your bid because you are currently the highest bidder."

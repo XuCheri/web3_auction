@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-13 00:05:52
+ * @LastEditTime: 2023-04-15 22:09:06
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -18,9 +18,11 @@ const { getUsers } = require("./utils/getUser");
 const { changeAvatar } = require("./utils/changeAvatar");
 const { searchOrder } = require("./utils/searchOrder");
 const { addOrder } = require("./utils/addOrder");
+const { updateDeploy } = require("./utils/updateDeploy");
 
 // 搭建一个express服务器
 const express = require("express");
+const { exec } = require("child_process");
 const multer = require("multer");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -151,6 +153,24 @@ app.get("/api/changeAvatar", async (req, res) => {
   const { Address, choosedAvatarNum } = req.query;
   const result = await changeAvatar(Address, choosedAvatarNum);
   res.send(result);
+});
+
+app.post("/api/deploy", async (req, res) => {
+  const result = await updateDeploy(req.body.args);
+  // res.send(result);
+  // 在子进程中运行 ls -la 命令
+  exec("yarn hardhat deploy --network sepolia", (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return res.status(500).send("Error");
+    }
+
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+
+    // 将输出作为响应发送回客户端
+    res.send(stdout);
+  });
 });
 
 // 保存静态资源
