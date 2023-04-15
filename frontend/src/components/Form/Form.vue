@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-04-08 20:06:07
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-10 01:30:49
+ * @LastEditTime: 2023-04-16 01:10:23
  * @FilePath: /web3_auction/frontend/src/components/Form/Form.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -14,6 +14,7 @@
             title="创建一个新的拍卖"
             ok-text="创建"
             cancel-text="取消"
+            :confirm-loading="confirmLoading"
             @ok="onOk"
         >
             <a-form ref="formRef" :model="formState" layout="vertical" name="form_in_modal">
@@ -147,6 +148,9 @@
                     <a-textarea v-model:value="formState.Reason" />
                 </a-form-item>
             </a-form>
+            <div class="progress" v-show="progress">
+                <a-progress type="circle" :width="70" :percent="percent" />
+            </div>
         </a-modal>
     </div>
 </template>
@@ -155,7 +159,14 @@ import dayjs from "dayjs"
 import { reactive, ref, toRaw, onBeforeMount } from "vue"
 import { InboxOutlined } from "@ant-design/icons-vue"
 import { message } from "ant-design-vue"
+import Fakeprogress from "fake-progress"
 import axios from "axios"
+const fake = new Fakeprogress({
+    timeConstant: 60000,
+})
+const percent = ref(0)
+const progress = ref(false)
+const confirmLoading = ref(false)
 const disabled = ref(true)
 const classification = ref("")
 const content = ref("")
@@ -186,7 +197,6 @@ const addInfo = () => {
         dataIndex: classification.value,
         key: classification.value,
     })
-    console.log(dataSource.value, columns.value)
     classification.value = ""
     content.value = ""
 }
@@ -208,7 +218,15 @@ const formState = reactive({
     AuctionTime: ref(),
     OrderDetailDescription: "",
 })
+
 const onOk = () => {
+    fake.start()
+    var timer = setInterval(() => {
+        percent.value = parseInt(fake.progress * 100)
+    }, 500)
+    confirmLoading.value = true
+    progress.value = true
+    const hide = message.loading("正在连接sepolia链，因服务器在国外，连接速度较慢，请耐心等待..", 0)
     formRef.value
         .validateFields()
         .then(async (values) => {
@@ -226,10 +244,18 @@ const onOk = () => {
             values["AuctionTime"] = new Date(
                 new Date(values["AuctionTime"].$d).getTime() + 28800000
             ).toISOString()
-            await axios.post("http://localhost:3000/api/addOrder", values)
+            await axios.post("http://localhost:3000/api/addOrder", values).then((res) => {
+                console.log(res.data)
+                message.success("添加成功")
+            })
             console.log("Received values of form: ", values)
             console.log("formState: ", toRaw(formState))
             visible.value = false
+            confirmLoading.value = false
+            fake.end()
+            clearInterval(timer)
+            setTimeout(hide, 2500)
+
             formRef.value.resetFields()
             columns.value = []
             dataSource.value = [{}]
@@ -286,6 +312,10 @@ const disabledDate = (current) => {
 }
 </script>
 <style scoped>
+.progress {
+    display: flex;
+    justify-content: center;
+}
 .collection-create-form_last-form-item {
     margin-bottom: 0;
 }

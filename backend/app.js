@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-15 22:09:06
+ * @LastEditTime: 2023-04-16 00:09:27
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -110,8 +110,31 @@ app.get("/api/searchOrder", async (req, res) => {
 // 写一个接口增加商品
 app.post("/api/addOrder", async (req, res) => {
   console.log(req.body);
-  const result = await addOrder(req.body);
-  res.send(result);
+  const result1 = await addOrder(req.body);
+  const seconds =
+    (new Date(req.body.AuctionTime).getTime() -
+      new Date().getTime() -
+      8 * 1000 * 60 * 60) /
+    1000;
+  const result2 = await updateDeploy([
+    req.body.Address,
+    Math.floor(seconds),
+    req.body.TopBidding,
+    0,
+    0,
+  ]);
+  exec("yarn hardhat deploy --network sepolia", (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return res.status(500).send("Error");
+    }
+
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+
+    // 将输出作为响应发送回客户端
+    res.send(stdout);
+  });
 });
 // 写一个接口增加点赞数
 app.get("/api/Likes", async (req, res) => {
@@ -155,23 +178,22 @@ app.get("/api/changeAvatar", async (req, res) => {
   res.send(result);
 });
 
-app.post("/api/deploy", async (req, res) => {
-  const result = await updateDeploy(req.body.args);
-  // res.send(result);
-  // 在子进程中运行 ls -la 命令
-  exec("yarn hardhat deploy --network sepolia", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return res.status(500).send("Error");
-    }
+// app.post("/api/deploy", async (req, res) => {
+//   const result = await updateDeploy(req.body.args);
+//   // res.send(result);
+//   exec("yarn hardhat deploy --network sepolia", (error, stdout, stderr) => {
+//     if (error) {
+//       console.error(`exec error: ${error}`);
+//       return res.status(500).send("Error");
+//     }
 
-    console.log(`stdout: ${stdout}`);
-    console.error(`stderr: ${stderr}`);
+//     console.log(`stdout: ${stdout}`);
+//     console.error(`stderr: ${stderr}`);
 
-    // 将输出作为响应发送回客户端
-    res.send(stdout);
-  });
-});
+//     // 将输出作为响应发送回客户端
+//     res.send(stdout);
+//   });
+// });
 
 // 保存静态资源
 app.use(express.static("public"));

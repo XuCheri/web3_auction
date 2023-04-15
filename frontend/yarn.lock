@@ -488,6 +488,11 @@ ethers@^6.2.0:
     tslib "2.4.0"
     ws "8.5.0"
 
+fake-progress@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmmirror.com/fake-progress/-/fake-progress-1.0.4.tgz#366bd2c04a5545300e32392371df0aa456141d1d"
+  integrity sha512-RIkSoOt6Aq6ZgCHEsm/MTH9RTrjY3lVEF9q+n5Qx+LVyS4ziQpijIHf2SKVIzTKEXA40D2Zps1duXfGvUioB3A==
+
 fill-range@^7.0.1:
   version "7.0.1"
   resolved "https://registry.npmmirror.com/fill-range/-/fill-range-7.0.1.tgz"
