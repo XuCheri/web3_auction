@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-13 01:53:04
+ * @LastEditTime: 2023-04-17 21:54:48
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -12,29 +12,9 @@ import Form from "@/components/Form/Form.vue"
 import { ref, onBeforeMount, reactive } from "vue"
 import axios from "axios"
 const haveOrder = ref(true)
-onBeforeMount(() => {
-    axios.get("http://localhost:3000/api/getOrders").then((res) => {
-        for (const [i, index] of res.data.entries()) {
-            if (new Date(index.AuctionTime).getTime() - 8 * 1000 * 60 * 60 - Date.now() > 0) {
-                haveOrder.value = false
-            } else {
-                res.data.splice(i, 1)
-            }
-        }
-        if (res.data.length == 0) {
-            haveOrder.value = true
-            return
-        }
-        res.data.map((item) => {
-            item.LikesValue = ref(item.LikesValue)
-            item.WantsValue = ref(item.WantsValue)
-            item.TopBidding = ref(item.TopBidding)
-            item.AuctionTime = ref(
-                new Date(item.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60
-            )
-        })
-        orders.value = res.data
-    })
+
+onBeforeMount(async () => {
+    await getData()
 })
 const value = ref("")
 const onSearch = async (searchValue) => {
@@ -100,6 +80,30 @@ const onSearch = async (searchValue) => {
     }
 }
 let orders = ref([])
+async function getData() {
+    await axios.get("http://localhost:3000/api/getOrders").then((res) => {
+        for (const [i, index] of res.data.entries()) {
+            if (new Date(index.AuctionTime).getTime() - 8 * 1000 * 60 * 60 - Date.now() > 0) {
+                haveOrder.value = false
+            } else {
+                res.data.splice(i, 1)
+            }
+        }
+        if (res.data.length == 0) {
+            haveOrder.value = true
+            return
+        }
+        res.data.map((item) => {
+            item.LikesValue = ref(item.LikesValue)
+            item.WantsValue = ref(item.WantsValue)
+            item.TopBidding = ref(item.TopBidding)
+            item.AuctionTime = ref(
+                new Date(item.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60
+            )
+        })
+        orders.value = res.data
+    })
+}
 async function LikesAdd(order) {
     await axios.get("http://localhost:3000/api/Likes?", {
         params: {
@@ -172,7 +176,7 @@ async function bid(order, NewBidPrice) {
                 @search="onSearch"
             />
         </a-col>
-        <a-col :span="6"><Form /></a-col>
+        <a-col :span="6"><Form @getData="getData" /></a-col>
     </a-row>
     <a-empty v-if="haveOrder"></a-empty>
 

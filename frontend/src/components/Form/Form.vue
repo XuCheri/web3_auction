@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-04-08 20:06:07
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-16 01:10:23
+ * @LastEditTime: 2023-04-17 21:57:21
  * @FilePath: /web3_auction/frontend/src/components/Form/Form.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -161,6 +161,7 @@ import { InboxOutlined } from "@ant-design/icons-vue"
 import { message } from "ant-design-vue"
 import Fakeprogress from "fake-progress"
 import axios from "axios"
+const emit = defineEmits(["getData"])
 const fake = new Fakeprogress({
     timeConstant: 60000,
 })
@@ -220,16 +221,20 @@ const formState = reactive({
 })
 
 const onOk = () => {
-    fake.start()
-    var timer = setInterval(() => {
-        percent.value = parseInt(fake.progress * 100)
-    }, 500)
-    confirmLoading.value = true
-    progress.value = true
-    const hide = message.loading("正在连接sepolia链，因服务器在国外，连接速度较慢，请耐心等待..", 0)
     formRef.value
         .validateFields()
         .then(async (values) => {
+            fake.start()
+            var timer = setInterval(() => {
+                percent.value = parseInt(fake.progress * 100)
+            }, 500)
+            confirmLoading.value = true
+            progress.value = true
+            const hide = message.loading(
+                "正在连接sepolia链，因服务器在国外，连接速度较慢，请耐心等待..",
+                0
+            )
+
             await axios.get("http://localhost:3000/api/getOrders").then((res) => {
                 values["ID"] = res.data.length + 1
             })
@@ -260,8 +265,10 @@ const onOk = () => {
             columns.value = []
             dataSource.value = [{}]
             console.log("reset formState: ", toRaw(formState))
+            emit("getData")
         })
         .catch((info) => {
+            message.error("添加失败,请检查表单是否填写完整")
             console.log("Validate Failed:", info)
         })
 }
