@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-18 14:32:30
+ * @LastEditTime: 2023-04-18 15:25:24
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -130,6 +130,12 @@ app.post("/api/addOrder", async (req, res) => {
     }
 
     console.log(`stdout: ${stdout}`);
+
+    const lines = stdout.split("\n");
+    const deployedLine = lines.find((line) => line.includes("deployed at"));
+    const regex = /deployed at (\w+) with \d+ gas/;
+
+    const address = deployedLine.match(regex)[1];
     console.error(`stderr: ${stderr}`);
     fs.readFile(
       "./artifacts/contracts/Auction.sol/Auction.json",
@@ -141,8 +147,8 @@ app.post("/api/addOrder", async (req, res) => {
         }
         // 将文件内容转为字符串
         const content = JSON.parse(data);
-        console.log(content.abi, content.bytecode);
-        const result1 = await addOrder(req.body, content.abi, content.bytecode);
+        console.log(content.abi);
+        const result1 = await addOrder(req.body, content.abi, address);
         res.send(result1);
       }
     );
