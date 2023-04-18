@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-17 22:09:10
+ * @LastEditTime: 2023-04-18 14:32:30
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -19,6 +19,7 @@ const { changeAvatar } = require("./utils/changeAvatar");
 const { searchOrder } = require("./utils/searchOrder");
 const { addOrder } = require("./utils/addOrder");
 const { updateDeploy } = require("./utils/updateDeploy");
+const fs = require("fs");
 
 // 搭建一个express服务器
 const express = require("express");
@@ -109,8 +110,7 @@ app.get("/api/searchOrder", async (req, res) => {
 });
 // 写一个接口增加商品
 app.post("/api/addOrder", async (req, res) => {
-  console.log(req.body);
-  const result1 = await addOrder(req.body);
+  // console.log(req.body);
   const seconds =
     (new Date(req.body.AuctionTime).getTime() -
       new Date().getTime() -
@@ -123,7 +123,7 @@ app.post("/api/addOrder", async (req, res) => {
     0,
     0,
   ]);
-  exec("yarn hardhat deploy --network sepolia", (error, stdout, stderr) => {
+  await exec("yarn hardhat deploy", async (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
       return res.status(500).send("Error");
@@ -131,9 +131,23 @@ app.post("/api/addOrder", async (req, res) => {
 
     console.log(`stdout: ${stdout}`);
     console.error(`stderr: ${stderr}`);
-
+    fs.readFile(
+      "./artifacts/contracts/Auction.sol/Auction.json",
+      "utf8",
+      async (err, data) => {
+        if (err) {
+          console.error(err);
+          return `{${err}}`;
+        }
+        // 将文件内容转为字符串
+        const content = JSON.parse(data);
+        console.log(content.abi, content.bytecode);
+        const result1 = await addOrder(req.body, content.abi, content.bytecode);
+        res.send(result1);
+      }
+    );
     // 将输出作为响应发送回客户端
-    res.send(stdout);
+    // res.send(stdout);
   });
 });
 // 写一个接口增加点赞数
