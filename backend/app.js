@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-28 16:25:55
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-18 15:25:24
+ * @LastEditTime: 2023-04-18 15:31:04
  * @FilePath: /web3_auction/backend/app.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -123,38 +123,41 @@ app.post("/api/addOrder", async (req, res) => {
     0,
     0,
   ]);
-  await exec("yarn hardhat deploy", async (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return res.status(500).send("Error");
-    }
-
-    console.log(`stdout: ${stdout}`);
-
-    const lines = stdout.split("\n");
-    const deployedLine = lines.find((line) => line.includes("deployed at"));
-    const regex = /deployed at (\w+) with \d+ gas/;
-
-    const address = deployedLine.match(regex)[1];
-    console.error(`stderr: ${stderr}`);
-    fs.readFile(
-      "./artifacts/contracts/Auction.sol/Auction.json",
-      "utf8",
-      async (err, data) => {
-        if (err) {
-          console.error(err);
-          return `{${err}}`;
-        }
-        // 将文件内容转为字符串
-        const content = JSON.parse(data);
-        console.log(content.abi);
-        const result1 = await addOrder(req.body, content.abi, address);
-        res.send(result1);
+  await exec(
+    "yarn hardhat deploy --network sepolia",
+    async (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return res.status(500).send("Error");
       }
-    );
-    // 将输出作为响应发送回客户端
-    // res.send(stdout);
-  });
+
+      console.log(`stdout: ${stdout}`);
+
+      const lines = stdout.split("\n");
+      const deployedLine = lines.find((line) => line.includes("deployed at"));
+      const regex = /deployed at (\w+) with \d+ gas/;
+
+      const address = deployedLine.match(regex)[1];
+      console.error(`stderr: ${stderr}`);
+      fs.readFile(
+        "./artifacts/contracts/Auction.sol/Auction.json",
+        "utf8",
+        async (err, data) => {
+          if (err) {
+            console.error(err);
+            return `{${err}}`;
+          }
+          // 将文件内容转为字符串
+          const content = JSON.parse(data);
+          console.log(content.abi);
+          const result1 = await addOrder(req.body, content.abi, address);
+          res.send(result1);
+        }
+      );
+      // 将输出作为响应发送回客户端
+      // res.send(stdout);
+    }
+  );
 });
 // 写一个接口增加点赞数
 app.get("/api/Likes", async (req, res) => {

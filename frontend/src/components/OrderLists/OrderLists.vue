@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-18 15:05:56
+ * @LastEditTime: 2023-04-18 16:40:17
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -50,11 +50,11 @@
                             <a-input-number
                                 v-model:value="BidPrice"
                                 :min="props.TopBidding.value + 1"
-                                :max="10000000"
+                                :max="1000000000000000000000000000"
                                 :step="1"
                                 style="width: 80%"
                             />
-                            <label for="">ETH</label>
+                            <label for="">WEI</label>
                         </template>
                         <pay-circle-filled key="pay" @click="bid" />
                     </a-popover>
@@ -94,6 +94,7 @@
                 />
             </a-card>
             <Drawer
+                :add="add"
                 :visible="visible"
                 @close="onClose"
                 :Reason="Reason"
@@ -125,14 +126,13 @@ import {
 import { message } from "ant-design-vue"
 import Drawer from "../Drawer/Drawer.vue"
 import { ref, computed, Transition, onBeforeMount } from "vue"
+import { ethers } from "ethers"
 onBeforeMount(() => {
-    abi = props.abi
-    bytecode = props.bytecode
     if (props.AuctionTime.value - Date.now() <= 0) {
         ended.value = false
     }
 })
-let abi, bytecode
+
 const key = "updatable"
 const ended = ref(true)
 function AuctionEnd() {
@@ -161,7 +161,7 @@ const props = defineProps([
     "order",
     "address",
     "abi",
-    "bytecode",
+    "add",
 ])
 const visible = ref(false)
 
@@ -172,7 +172,7 @@ const onClose = () => {
     visible.value = false
 }
 const TopPrice = computed(() => {
-    return props.TopBidding.value + "ETH"
+    return props.TopBidding.value + "WEI"
 })
 const BidPrice = ref(props.TopBidding.value + 1 || 0)
 const Liked = ref(false)
@@ -184,16 +184,33 @@ const bid = () => {
         key,
     })
     if (BidPrice.value >= props.TopBidding.value + 1) {
-        setTimeout(() => {
-            emit("bid", props.order, BidPrice.value)
+        const a = bidEth()
+            .then((res) => {
+                console.log(res)
+                if (res == true) {
+                    setTimeout(async () => {
+                        emit("bid", props.order, BidPrice.value)
 
-            // props.TopBidding.value = BidPrice.value
-            message.success({
-                content: "Bid Success!",
-                key,
-                duration: 2,
+                        // props.TopBidding.value = BidPrice.value
+                        message.success({
+                            content: "Bid Success!",
+                            key,
+                            duration: 2,
+                        })
+                    }, 1000)
+                } else {
+                    setTimeout(() => {
+                        message.error({
+                            content: "用户拒绝了交易",
+                            key,
+                            duration: 2,
+                        })
+                    }, 2500)
+                }
             })
-        }, 1000)
+            .catch((err) => {
+                console.log(err)
+            })
     } else {
         setTimeout(() => {
             message.error({
@@ -233,6 +250,39 @@ const tabList = [
 const Tabkey = ref("tab1")
 const onTabChange = (value) => {
     Tabkey.value = value
+}
+
+async function bidEth() {
+    const ethAmount = BidPrice.value
+
+    console.log(`Biding with ${ethAmount} ETH`)
+    if (typeof window.ethereum != "undefined") {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signers = await provider.getSigner()
+        const contract = new ethers.Contract(props.add, props.abi, signers)
+        try {
+            const transactionResponese = await contract.bid({
+                // value: ethers.utils.parseEther(ethAmount),
+                value: ethAmount,
+                // value: 1000000000000,
+            })
+            await listenForTransactionMine(transactionResponese, provider)
+            console.log(`done`)
+            return true
+        } catch (error) {
+            console.log(error)
+            return false
+        }
+    }
+}
+function listenForTransactionMine(transactionResponese, provider) {
+    console.log(`Mining ${transactionResponese.hash} ...`)
+    return new Promise((resolve, reject) => {
+        provider.once(transactionResponese.hash, (transactionReceipt) => {
+            console.log(`Completed with ${transactionReceipt.confirmations} confirmations`)
+            resolve()
+        })
+    })
 }
 </script>
 <style scoped>
