@@ -24,7 +24,7 @@
                     </router-link>
                 </a-menu-item>
                 <a-menu-item key="3" :disabled="disabled">
-                    <router-link to="/OrderInfo">
+                    <router-link to="/Transactions">
                         <desktop-outlined />
                         <span>订单信息</span>
                     </router-link>
