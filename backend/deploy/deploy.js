@@ -6,7 +6,7 @@
  * @FilePath: /web3_auction/backend/deploy/deploy.js
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-const args = ["0xdb056cc02d181885899e5cb2934ba798d354c418",1036731,1,0,0];
+const args = ["0xa34323db7bea9238202c7a866cda9977cba8ff6f",777405,20,0,0];
 const {
   networkConfig,
   developmentChains,

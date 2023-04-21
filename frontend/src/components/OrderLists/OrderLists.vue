@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-18 16:40:17
+ * @LastEditTime: 2023-04-21 20:59:31
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -131,8 +131,29 @@ onBeforeMount(() => {
     if (props.AuctionTime.value - Date.now() <= 0) {
         ended.value = false
     }
+    getlogs()
 })
+async function getlogs() {
+    // 连接到 Sepolia 测试链
+    const provider = new ethers.providers.JsonRpcProvider(
+        "https://sepolia.infura.io/v3/05c8d4263d474e18bb174fcf8d60d511"
+    )
+    // 智能合约地址
+    const contractAddress = props.add
 
+    // 创建智能合约实例
+    const contract = new ethers.Contract(contractAddress, props.abi, provider)
+
+    // 获取智能合约的所有交易记录
+    const filter = {
+        address: contractAddress,
+        fromBlock: 0,
+        toBlock: "latest",
+    }
+    const transactions = await provider.getLogs(filter)
+
+    console.log(transactions)
+}
 const key = "updatable"
 const ended = ref(true)
 function AuctionEnd() {
@@ -260,6 +281,7 @@ async function bidEth() {
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         const signers = await provider.getSigner()
         const contract = new ethers.Contract(props.add, props.abi, signers)
+
         try {
             const transactionResponese = await contract.bid({
                 // value: ethers.utils.parseEther(ethAmount),
