@@ -2,23 +2,25 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:19
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-22 03:01:49
+ * @LastEditTime: 2023-04-22 22:55:45
  * @FilePath: /web3_auction/src/pages/Demo2.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
-    <ul>
+    <!-- <ul>
         <li v-for="item in data">
             {{ item.Author }}
         </li>
-    </ul>
+    </ul> -->
+    <TransactionsTable :data="transaction" />
 </template>
 <script setup>
 import axios from "axios"
 import { ethers } from "ethers"
 import { ref } from "vue"
-let data = ref(),
-    transaction
+import TransactionsTable from "@/components/TransactionsTable/TransactionsTable.vue"
+const data = ref()
+const transaction = ref([])
 axios
     .get("http://localhost:3000/api/getOrders")
     .then((res) => {
@@ -42,7 +44,6 @@ async function getlogs(add, abi) {
 
     // 创建智能合约实例
     const contract = new ethers.Contract(contractAddress, abi, provider)
-
     // 获取智能合约的所有交易记录
     const filter = {
         address: contractAddress,
@@ -50,7 +51,15 @@ async function getlogs(add, abi) {
         toBlock: "latest",
     }
     const transactions = await provider.getLogs(filter)
-    transaction = transactions
     console.log(transactions)
+    for (const iterator of transactions) {
+        console.log(
+            (await provider.getBlockWithTransactions(iterator.blockHash)).transactions.filter(
+                (item) => item.hash === iterator.transactionHash
+            )[0]
+        )
+    }
+
+    transaction.value.push(...transactions)
 }
 </script>

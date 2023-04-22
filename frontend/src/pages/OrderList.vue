@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-18 15:28:32
+ * @LastEditTime: 2023-04-22 19:53:40
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -43,40 +43,29 @@ const onSearch = async (searchValue) => {
         })
         return true
     } else {
-        await axios
-            .get("http://localhost:3000/api/searchOrder?", {
-                params: {
-                    OrderName: searchValue,
-                },
-            })
-            .then((res) => {
-                if (res.data.length == 0) {
-                    haveOrder.value = true
+        axios.get("http://localhost:3000/api/getOrders").then((res) => {
+            for (const [i, index] of res.data.entries()) {
+                if (new Date(index.AuctionTime).getTime() - 8 * 1000 * 60 * 60 - Date.now() > 0) {
+                    haveOrder.value = false
+                } else {
+                    res.data.splice(i, 1)
                 }
-                for (const [i, index] of res.data.entries()) {
-                    if (
-                        new Date(index.AuctionTime).getTime() - 8 * 1000 * 60 * 60 - Date.now() >
-                        0
-                    ) {
-                        haveOrder.value = false
-                    } else {
-                        res.data.splice(i, 1)
-                    }
-                }
-
-                res.data.map((item) => {
-                    item.LikesValue = ref(item.LikesValue)
-                    item.WantsValue = ref(item.WantsValue)
-                    item.TopBidding = ref(item.TopBidding)
-                    item.AuctionTime = ref(
-                        new Date(item.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60
-                    )
-                })
-                orders.value = res.data
+            }
+            if (res.data.length == 0) {
+                haveOrder.value = true
+                return
+            }
+            res.data.map((item) => {
+                item.LikesValue = ref(item.LikesValue)
+                item.WantsValue = ref(item.WantsValue)
+                item.TopBidding = ref(item.TopBidding)
+                item.AuctionTime = ref(
+                    new Date(item.AuctionTime.toString()).getTime() - 8 * 1000 * 60 * 60
+                )
             })
-            .catch((err) => {
-                console.log(err)
-            })
+            res.data = res.data.filter((order) => order.OrderName.includes(searchValue))
+            orders.value = res.data
+        })
     }
 }
 let orders = ref([])
