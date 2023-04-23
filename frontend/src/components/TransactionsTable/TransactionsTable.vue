@@ -1,5 +1,5 @@
 <template>
-    <a-table :data-source="data" :columns="columns" :scroll="{ x: 1500 }">
+    <a-table :data-source="data" :columns="columns" borderd>
         <template #title>{{ ContractAddress }}</template>
         <template
             #customFilterDropdown="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
@@ -34,6 +34,26 @@
             <template v-if="column.dataIndex === 'address'">
                 <a :href="`https://sepolia.etherscan.io/address/${text}`">{{ text }}</a>
             </template>
+            <template v-if="column.dataIndex === 'transactionHash'">
+                <a :href="`https://sepolia.etherscan.io/tx/${text}`">{{
+                    text.slice(0, 19) + "..."
+                }}</a>
+            </template>
+            <template v-if="column.dataIndex === 'blockNumber'">
+                <a :href="`https://sepolia.etherscan.io/block/${text}`">{{ text }}</a>
+            </template>
+            <template v-if="column.dataIndex === 'from'">
+                <a :href="`https://sepolia.etherscan.io/address/${text}`">{{
+                    text.slice(0, 8) + "..." + text.slice(-8)
+                }}</a>
+            </template>
+            <template v-if="column.dataIndex === 'to'">
+                <a :href="`https://sepolia.etherscan.io/address/${text}`">{{
+                    text.slice(0, 8) + "..." + text.slice(-8)
+                }}</a>
+            </template>
+            <template v-if="column.dataIndex === 'value'"> {{ text }} WEI </template>
+            <template v-if="column.dataIndex === 'gas'"> {{ text }} ETH </template>
             <span v-if="searchText && searchedColumn === column.dataIndex">
                 <template
                     v-for="(fragment, i) in text
@@ -71,27 +91,12 @@ const searchedColumn = () => {
 const searchInput = ref()
 const columns = [
     {
-        title: "Address",
-        dataIndex: "address",
-        key: "address",
-        // customFilterDropdown: true,
-        // onFilter: (value, record) =>
-        //     record.name.toString().toLowerCase().includes(value.toLowerCase()),
-        // onFilterDropdownVisibleChange: (visible) => {
-        //     if (visible) {
-        //         setTimeout(() => {
-        //             searchInput.value.focus()
-        //         }, 100)
-        //     }
-        // },
+        title: "TransactionHash",
+        dataIndex: "transactionHash",
+        key: "transactionHash",
     },
     {
-        title: "BlockHash",
-        dataIndex: "blockHash",
-        key: "blockHash",
-    },
-    {
-        title: "BlockNumber",
+        title: "Block",
         dataIndex: "blockNumber",
         key: "blockNumber",
         // customFilterDropdown: true,
@@ -106,9 +111,39 @@ const columns = [
         // },
     },
     {
-        title: "TransactionHash",
-        dataIndex: "transactionHash",
-        key: "transactionHash",
+        title: "From",
+        dataIndex: "from",
+        key: "from",
+    },
+    {
+        title: "To",
+        dataIndex: "to",
+        key: "to",
+    },
+    {
+        title: "Value",
+        dataIndex: "value",
+        key: "value",
+    },
+    // {
+    //     title: "Address",
+    //     dataIndex: "address",
+    //     key: "address",
+    // customFilterDropdown: true,
+    // onFilter: (value, record) =>
+    //     record.name.toString().toLowerCase().includes(value.toLowerCase()),
+    // onFilterDropdownVisibleChange: (visible) => {
+    //     if (visible) {
+    //         setTimeout(() => {
+    //             searchInput.value.focus()
+    //         }, 100)
+    //     }
+    // },
+    // },
+    {
+        title: "Txn Fees",
+        dataIndex: "gas",
+        key: "gas",
     },
 ]
 const handleSearch = (selectedKeys, confirm, dataIndex) => {

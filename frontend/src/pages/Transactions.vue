@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:19
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-22 22:55:45
+ * @LastEditTime: 2023-04-23 22:15:26
  * @FilePath: /web3_auction/src/pages/Demo2.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -51,13 +51,40 @@ async function getlogs(add, abi) {
         toBlock: "latest",
     }
     const transactions = await provider.getLogs(filter)
-    console.log(transactions)
+    // console.log(transactions)
     for (const iterator of transactions) {
-        console.log(
-            (await provider.getBlockWithTransactions(iterator.blockHash)).transactions.filter(
+        // console.log(
+        //     (await provider.getBlockWithTransactions(iterator.blockHash)).transactions.filter(
+        //         (item) => item.hash === iterator.transactionHash
+        //     )[0]
+        // )
+        // console.log(await provider.getTransactionReceipt(iterator.transactionHash))
+        // 获取每笔交易的value和gas
+        // console.log(
+        //     (await provider.getBlockWithTransactions(iterator.blockHash)).transactions.filter(
+        //         (item) => item.hash === iterator.transactionHash
+        //     )[0].value
+        // )
+        const blockTransaction = (
+            await provider.getBlockWithTransactions(iterator.blockHash)
+        ).transactions.filter((item) => item.hash === iterator.transactionHash)[0]
+        // 获取每笔交易的gas
+        const gas = (
+            ((await provider.getBlockWithTransactions(iterator.blockHash)).transactions.filter(
                 (item) => item.hash === iterator.transactionHash
-            )[0]
-        )
+            )[0].gasPrice *
+                (await provider.getTransactionReceipt(iterator.transactionHash)).gasUsed) /
+            1000000000000000000
+        ).toFixed(8)
+        const value = (
+            await provider.getBlockWithTransactions(iterator.blockHash)
+        ).transactions.filter((item) => item.hash === iterator.transactionHash)[0].value
+        // console.log(`gas: ${gas} eth, value: ${value} wei`)
+        iterator["gas"] = gas
+        iterator["value"] = value
+        iterator["from"] = blockTransaction.from
+        iterator["to"] = blockTransaction.to
+        console.log(blockTransaction)
     }
 
     transaction.value.push(...transactions)
