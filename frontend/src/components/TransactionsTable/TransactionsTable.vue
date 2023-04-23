@@ -34,7 +34,12 @@
             <template v-if="column.dataIndex === 'address'">
                 <a :href="`https://sepolia.etherscan.io/address/${text}`">{{ text }}</a>
             </template>
-            <template v-if="column.dataIndex === 'transactionHash'">
+            <template
+                v-if="
+                    column.dataIndex === 'transactionHash' &&
+                    (state.searchedColumn !== 'transactionHash' || state.searchText == '')
+                "
+            >
                 <a :href="`https://sepolia.etherscan.io/tx/${text}`">{{
                     text.slice(0, 19) + "..."
                 }}</a>
@@ -42,32 +47,51 @@
             <template v-if="column.dataIndex === 'blockNumber'">
                 <a :href="`https://sepolia.etherscan.io/block/${text}`">{{ text }}</a>
             </template>
-            <template v-if="column.dataIndex === 'from'">
+            <template
+                v-if="
+                    column.dataIndex === 'from' &&
+                    (state.searchedColumn !== 'from' || state.searchText == '')
+                "
+            >
                 <a :href="`https://sepolia.etherscan.io/address/${text}`">{{
                     text.slice(0, 8) + "..." + text.slice(-8)
                 }}</a>
             </template>
-            <template v-if="column.dataIndex === 'to'">
+            <template
+                v-if="
+                    column.dataIndex === 'to' &&
+                    (state.searchedColumn !== 'to' || state.searchText == '')
+                "
+            >
                 <a :href="`https://sepolia.etherscan.io/address/${text}`">{{
                     text.slice(0, 8) + "..." + text.slice(-8)
                 }}</a>
             </template>
-            <template v-if="column.dataIndex === 'value'"> {{ text }} WEI </template>
+            <template v-if="column.dataIndex === 'value'"> {{ text }} wei </template>
             <template v-if="column.dataIndex === 'gas'"> {{ text }} ETH </template>
-            <span v-if="searchText && searchedColumn === column.dataIndex">
+            <span v-if="state.searchText && state.searchedColumn === column.dataIndex">
                 <template
                     v-for="(fragment, i) in text
                         .toString()
-                        .split(new RegExp(`(?<=${searchText})|(?=${searchText})`, 'i'))"
+                        .split(new RegExp(`(?<=${state.searchText})|(?=${state.searchText})`, 'i'))"
                 >
-                    <mark
-                        v-if="fragment.toLowerCase() === searchText.toLowerCase()"
-                        :key="i"
-                        class="highlight"
+                    <a
+                        :href="
+                            column.dataIndex == 'transactionHash'
+                                ? 'https://sepolia.etherscan.io/tx/' + text
+                                : 'https://sepolia.etherscan.io/address/' + text
+                        "
+                        ><mark
+                            v-if="fragment.toLowerCase() == state.searchText.toLowerCase()"
+                            :key="i"
+                            class="highlight"
+                        >
+                            {{ fragment }}
+                        </mark>
+                        <template v-else>{{
+                            fragment.length > 10 ? fragment.slice(0, 9) + "..." : fragment
+                        }}</template></a
                     >
-                        {{ fragment }}
-                    </mark>
-                    <template v-else>{{ fragment }}</template>
                 </template>
             </span>
         </template>
@@ -81,7 +105,7 @@ const data = props.data
 const searchText = () => {
     return ref("")
 }
-const state = reactive({
+const state = ref({
     searchText: "",
     searchedColumn: "",
 })
@@ -94,6 +118,18 @@ const columns = [
         title: "TransactionHash",
         dataIndex: "transactionHash",
         key: "transactionHash",
+        customFilterDropdown: true,
+        onFilter: (value, record) =>
+            record.transactionHash.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: (visible) => {
+            if (!visible) {
+                searchInput.value.focus()
+                console.log(searchInput.value)
+                setTimeout(() => {
+                    searchInput.value.focus()
+                }, 100)
+            }
+        },
     },
     {
         title: "Block",
@@ -114,11 +150,35 @@ const columns = [
         title: "From",
         dataIndex: "from",
         key: "from",
+        customFilterDropdown: true,
+        onFilter: (value, record) =>
+            record.from.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: (visible) => {
+            if (!visible) {
+                searchInput.value.focus()
+                console.log(searchInput.value)
+                setTimeout(() => {
+                    searchInput.value.focus()
+                }, 100)
+            }
+        },
     },
     {
         title: "To",
         dataIndex: "to",
         key: "to",
+        customFilterDropdown: true,
+        onFilter: (value, record) =>
+            record.to.toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: (visible) => {
+            if (!visible) {
+                searchInput.value.focus()
+                console.log(searchInput.value)
+                setTimeout(() => {
+                    searchInput.value.focus()
+                }, 100)
+            }
+        },
     },
     {
         title: "Value",
@@ -148,14 +208,14 @@ const columns = [
 ]
 const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm()
-    state.searchText = selectedKeys[0]
-    state.searchedColumn = dataIndex
+    state.value.searchText = selectedKeys[0]
+    state.value.searchedColumn = dataIndex
 }
 const handleReset = (clearFilters) => {
     clearFilters({
         confirm: true,
     })
-    state.searchText = ""
+    state.value.searchText = ""
 }
 </script>
 <style scoped>
