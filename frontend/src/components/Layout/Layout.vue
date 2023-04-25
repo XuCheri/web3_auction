@@ -76,7 +76,11 @@
                 <h1 style="text-align: center">基于区块链的拍卖系统</h1>
             </a-layout-header>
             <a-layout-content style="margin: 0 16px">
-                <router-view></router-view>
+                <router-view v-slot="{ Component }">
+                    <KeepAlive>
+                        <component :is="Component" />
+                    </KeepAlive>
+                </router-view>
             </a-layout-content>
             <a-layout-footer style="text-align: center">
                 <p class="copyright">

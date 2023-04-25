@@ -2,17 +2,14 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:19
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-23 22:15:26
+ * @LastEditTime: 2023-04-25 17:55:44
  * @FilePath: /web3_auction/src/pages/Demo2.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
-    <!-- <ul>
-        <li v-for="item in data">
-            {{ item.Author }}
-        </li>
-    </ul> -->
-    <TransactionsTable :data="transaction" />
+    <KeepAlive>
+        <TransactionsTable :data="transaction" />
+    </KeepAlive>
 </template>
 <script setup>
 import axios from "axios"
@@ -84,7 +81,6 @@ async function getlogs(add, abi) {
         iterator["value"] = value
         iterator["from"] = blockTransaction.from
         iterator["to"] = blockTransaction.to
-        console.log(blockTransaction)
     }
 
     transaction.value.push(...transactions)
