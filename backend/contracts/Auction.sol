@@ -74,8 +74,6 @@ contract Auction {
     function auctionEnd() public {
         require(block.timestamp >= auctionEndTime, "Auction not yet ended.");
         require(!ended, "Auction has already ended.");
-        ended = true;
-        emit AuctionEnded(highestBidder, highestBid);
 
         // Refund all unsuccessful bidders
         for (uint i = 0; i < bidders.length; i++) {
@@ -88,6 +86,8 @@ contract Auction {
 
         // Transfer the winning bid to the beneficiary minus the commission
         beneficiary.transfer(highestBid - commission);
+        ended = true;
+        emit AuctionEnded(highestBidder, highestBid);
     }
 
     function highestBidderWithdraw() private {

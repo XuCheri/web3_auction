@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-22 19:53:40
+ * @LastEditTime: 2023-04-25 21:16:43
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -171,7 +171,8 @@ async function bid(order, NewBidPrice) {
 
     <a-divider v-if="!haveOrder">商品列表</a-divider>
     <a-row :gutter="[24, 8]">
-        <TransitionGroup name="fade">
+        <Suspense>
+            <!-- <TransitionGroup name="fade"> -->
             <OrderLists
                 v-for="order in orders"
                 :key="order.ID"
@@ -204,7 +205,9 @@ async function bid(order, NewBidPrice) {
                 @NoLikesAdd="NoLikesAdd(order)"
                 @NoWantsAdd="NoWantsAdd(order)"
             />
-        </TransitionGroup>
+            <!-- <template #fallback> Loading... </template> -->
+            <!-- </TransitionGroup> -->
+        </Suspense>
     </a-row>
     <a-back-top />
 </template>
