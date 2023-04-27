@@ -81,6 +81,7 @@
                         <component :is="Component" />
                     </KeepAlive>
                 </router-view>
+                <!-- <router-view></router-view> -->
             </a-layout-content>
             <a-layout-footer style="text-align: center">
                 <p class="copyright">

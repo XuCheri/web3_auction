@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-25 21:16:43
+ * @LastEditTime: 2023-04-27 23:53:49
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -171,43 +171,43 @@ async function bid(order, NewBidPrice) {
 
     <a-divider v-if="!haveOrder">商品列表</a-divider>
     <a-row :gutter="[24, 8]">
-        <Suspense>
-            <!-- <TransitionGroup name="fade"> -->
-            <OrderLists
-                v-for="order in orders"
-                :key="order.ID"
-                :Author="order.Author"
-                :AuthorDescription="order.AuthorDescription"
-                :OrderName="order.OrderName"
-                :OrderDescription="order.OrderDescription"
-                :imgsrc="order.imgsrc"
-                :LikesValue="order.LikesValue"
-                :WantsValue="order.WantsValue"
-                :avatarSrc="order.avatarSrc"
-                :AuctionTime="ref(order.AuctionTime)"
-                :TopBidding="ref(order.TopBidding)"
-                :Reason="order.Reason"
-                :City="order.City"
-                :Country="order.Country"
-                :Email="order.Email"
-                :Phone="order.Phone"
-                :type="order.type"
-                :OrderDetailDescription="order.OrderDetailDescription"
-                :columns="order.columns"
-                :dataSource="order.dataSource"
-                :address="order.Address"
-                :order="order"
-                :abi="order.abi"
-                :add="order.address"
-                @bid="bid"
-                @LikesAdd="LikesAdd(order)"
-                @WantsAdd="WantsAdd(order)"
-                @NoLikesAdd="NoLikesAdd(order)"
-                @NoWantsAdd="NoWantsAdd(order)"
-            />
-            <!-- <template #fallback> Loading... </template> -->
-            <!-- </TransitionGroup> -->
-        </Suspense>
+        <!-- <Suspense> -->
+        <!-- <TransitionGroup name="fade"> -->
+        <OrderLists
+            v-for="order in orders"
+            :key="order.ID"
+            :Author="order.Author"
+            :AuthorDescription="order.AuthorDescription"
+            :OrderName="order.OrderName"
+            :OrderDescription="order.OrderDescription"
+            :imgsrc="order.imgsrc"
+            :LikesValue="order.LikesValue"
+            :WantsValue="order.WantsValue"
+            :avatarSrc="order.avatarSrc"
+            :AuctionTime="ref(order.AuctionTime)"
+            :TopBidding="ref(order.TopBidding)"
+            :Reason="order.Reason"
+            :City="order.City"
+            :Country="order.Country"
+            :Email="order.Email"
+            :Phone="order.Phone"
+            :type="order.type"
+            :OrderDetailDescription="order.OrderDetailDescription"
+            :columns="order.columns"
+            :dataSource="order.dataSource"
+            :address="order.Address"
+            :order="order"
+            :abi="order.abi"
+            :add="order.address"
+            @bid="bid"
+            @LikesAdd="LikesAdd(order)"
+            @WantsAdd="WantsAdd(order)"
+            @NoLikesAdd="NoLikesAdd(order)"
+            @NoWantsAdd="NoWantsAdd(order)"
+        />
+        <!-- <template #fallback> Loading... </template> -->
+        <!-- </TransitionGroup> -->
+        <!-- </Suspense> -->
     </a-row>
     <a-back-top />
 </template>

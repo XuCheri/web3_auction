@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-25 20:54:44
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-25 19:58:21
+ * @LastEditTime: 2023-04-27 23:09:50
  * @FilePath: /web3_auction/src/components/OrderLists/OrderLists.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -127,9 +127,7 @@ import { message } from "ant-design-vue"
 import Drawer from "../Drawer/Drawer.vue"
 import { ref, computed, Transition, onBeforeMount } from "vue"
 import { ethers } from "ethers"
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const signers = await provider.getSigner()
-const contract = new ethers.Contract(props.add, props.abi, signers)
+
 onBeforeMount(() => {
     if (props.AuctionTime.value - Date.now() <= 0) {
         ended.value = false
@@ -264,6 +262,9 @@ const onTabChange = (value) => {
     Tabkey.value = value
 }
 async function auctionEnd() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signers = await provider.getSigner()
+    const contract = new ethers.Contract(props.add, props.abi, signers)
     const transactionResponese = await contract.auctionEnd()
     await listenForTransactionMine(transactionResponese, provider)
     console.log(`auctionEnd done`)
@@ -275,6 +276,9 @@ async function bidEth() {
     console.log(`Biding with ${ethAmount} ETH`)
     if (typeof window.ethereum != "undefined") {
         try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            const signers = await provider.getSigner()
+            const contract = new ethers.Contract(props.add, props.abi, signers)
             const transactionResponese = await contract.bid({
                 // value: ethers.utils.parseEther(ethAmount),
                 value: ethAmount,
