@@ -115,7 +115,7 @@ const searchedColumn = () => {
 const searchInput = ref()
 const columns = [
     {
-        title: "TransactionHash",
+        title: "交易哈希值",
         dataIndex: "transactionHash",
         key: "transactionHash",
         customFilterDropdown: true,
@@ -132,7 +132,7 @@ const columns = [
         },
     },
     {
-        title: "Block",
+        title: "区块号",
         dataIndex: "blockNumber",
         key: "blockNumber",
         // customFilterDropdown: true,
@@ -147,7 +147,7 @@ const columns = [
         // },
     },
     {
-        title: "From",
+        title: "发送方",
         dataIndex: "from",
         key: "from",
         customFilterDropdown: true,
@@ -164,7 +164,7 @@ const columns = [
         },
     },
     {
-        title: "To",
+        title: "接收方",
         dataIndex: "to",
         key: "to",
         customFilterDropdown: true,
@@ -181,7 +181,7 @@ const columns = [
         },
     },
     {
-        title: "Value",
+        title: "发送金额",
         dataIndex: "value",
         key: "value",
     },
@@ -201,7 +201,7 @@ const columns = [
     // },
     // },
     {
-        title: "Txn Fees",
+        title: "手续费",
         dataIndex: "gas",
         key: "gas",
     },

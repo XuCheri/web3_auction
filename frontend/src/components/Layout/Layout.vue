@@ -26,31 +26,26 @@
                 <a-menu-item key="3" :disabled="disabled">
                     <router-link to="/Transactions">
                         <desktop-outlined />
-                        <span>订单信息</span>
+                        <span>交易信息</span>
                     </router-link>
                 </a-menu-item>
-                <a-sub-menu key="sub1" :disabled="disabled">
-                    <template #title>
-                        <span>
-                            <user-outlined />
-                            <span>用户中心</span>
-                        </span>
-                    </template>
-                    <a-menu-item key="4">Tom</a-menu-item>
-                    <a-menu-item key="5">Bill</a-menu-item>
-                    <a-menu-item key="6">Alex</a-menu-item>
-                </a-sub-menu>
+                <a-menu-item key="4" :disabled="disabled">
+                    <router-link to="FinishedAuction">
+                        <desktop-outlined />
+                        <span>已完成订单</span>
+                    </router-link>
+                </a-menu-item>
                 <a-sub-menu key="sub2" :disabled="disabled">
                     <template #title>
                         <span>
                             <team-outlined />
-                            <span>Team</span>
+                            <span>游戏中心</span>
                         </span>
                     </template>
-                    <a-menu-item key="7">Team 1</a-menu-item>
-                    <a-menu-item key="8">Team 2</a-menu-item>
+                    <a-menu-item key="5">Game 1</a-menu-item>
+                    <a-menu-item key="6">Game 2</a-menu-item>
                 </a-sub-menu>
-                <a-menu-item key="9">
+                <a-menu-item key="7">
                     <router-link to="/comments">
                         <comment-outlined />
                         <span>评论区</span>
