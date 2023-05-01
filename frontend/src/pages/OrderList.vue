@@ -2,7 +2,7 @@
  * @Author: cheri 1156429007@qq.com
  * @Date: 2023-03-20 18:01:14
  * @LastEditors: cheri 1156429007@qq.com
- * @LastEditTime: 2023-04-27 23:53:49
+ * @LastEditTime: 2023-05-01 16:57:52
  * @FilePath: /web3_auction/frontend/src/pages/OrderList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -31,6 +31,7 @@ const onSearch = async (searchValue) => {
                 haveOrder.value = true
                 return
             }
+            haveOrder.value = false
             res.data.map((item) => {
                 item.LikesValue = ref(item.LikesValue)
                 item.WantsValue = ref(item.WantsValue)
@@ -46,7 +47,7 @@ const onSearch = async (searchValue) => {
         axios.get("http://localhost:3000/api/getOrders").then((res) => {
             for (const [i, index] of res.data.entries()) {
                 if (new Date(index.AuctionTime).getTime() - 8 * 1000 * 60 * 60 - Date.now() > 0) {
-                    haveOrder.value = false
+                    haveOrder.value = true
                 } else {
                     res.data.splice(i, 1)
                 }
@@ -55,6 +56,7 @@ const onSearch = async (searchValue) => {
                 haveOrder.value = true
                 return
             }
+            haveOrder.value = false
             res.data.map((item) => {
                 item.LikesValue = ref(item.LikesValue)
                 item.WantsValue = ref(item.WantsValue)
@@ -64,6 +66,9 @@ const onSearch = async (searchValue) => {
                 )
             })
             res.data = res.data.filter((order) => order.OrderName.includes(searchValue))
+            if (res.data.length == 0) {
+                haveOrder.value = true
+            }
             orders.value = res.data
         })
     }
@@ -82,6 +87,7 @@ async function getData() {
             haveOrder.value = true
             return
         }
+        haveOrder.value = false
         res.data.map((item) => {
             item.LikesValue = ref(item.LikesValue)
             item.WantsValue = ref(item.WantsValue)
